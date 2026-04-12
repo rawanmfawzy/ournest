@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ournest/core/utils/appImages.dart';
-import '../../core/utils/appIcons.dart';
-import '../../core/widgets/buttom_navigationbar_mother.dart';
+import 'package:ournest/features/auth/views/signup_page.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
+import '../../core/widgets/buttom_navigation_bar_mother.dart';
 import '../../core/widgets/custom_buttom.dart';
 import '../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -74,10 +75,10 @@ class WelcomeServicesPage extends StatelessWidget {
                   child: CustomButton(
                     text: "Continue",
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => ButtomNavigationBarmother(),
+                          builder: (_) => SignUpPage(),
                         ),
                       );
                     },
@@ -181,7 +182,7 @@ class _ServiceCard extends StatelessWidget {
         border: Border.all(color: Colors.pink.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 5.r,
             offset: const Offset(0, 3),
           ),

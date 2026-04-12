@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:ournest/features/auth/views/signup_page.dart';
 import '../../../core/cubit/user_cubit.dart';
 import '../../../core/cubit/user_state.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
-import '../../../core/utils/appStyles.dart';
-import '../../../core/widgets/buttom_navigationbar_mother.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_Icons.dart';
+import '../../../core/utils/app_Styles.dart';
+import '../../../core/widgets/buttom_navigation_bar_mother.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_text_field.dart';
-
-
-import '../../onboarding/User_Doctor_Selection_Page.dart';
 import '../../onboarding/welcome_services_page.dart';
 import '../../pass/views/forget_password_page.dart';
 
@@ -276,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const UserDoctorSelectionPage(),
+                            builder: (_) => const WelcomeServicesPage(),
                           ),
                         );
                       },

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ournest/features/onboarding/mother/step1_gender.dart';
 import '../../core/helper/my_navgator.dart';
-import '../../core/utils/appColor.dart';
-import '../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../core/widgets/custom_buttom.dart';
 import '../splash/views/background.dart';
+import 'services/onboarding_data.dart';
 class UserDoctorSelectionPage extends StatelessWidget {
   const UserDoctorSelectionPage({super.key});
 
@@ -43,13 +44,15 @@ class UserDoctorSelectionPage extends StatelessWidget {
                 color: AppColors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step1Gender(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.isDoctor = false;
+                  OnboardingData.role = "Mother";
+                  MyNavigator.goTo(
+                    context,
+                    const Step1Gender(),
+                    type: NavigatorType.push,
+                  );
+                }
             ),
           ),
 
@@ -75,15 +78,11 @@ class UserDoctorSelectionPage extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                // MyNavigator.goTo(
-                //   context,
-                //   const
-                //   SignUpPage(),
-                //   type:
-                //   NavigatorType.push,
-                // );
-              },
+                onPressed: () {
+                  OnboardingData.isDoctor = true;
+                  OnboardingData.role = "Doctor";
+
+                }
             ),
           ),
         ],

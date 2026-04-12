@@ -2,14 +2,6 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/message_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
-import '../../../core/utils/appStyles.dart';
-import '../../../core/widgets/custom_svg.dart';
 import '../services/feeding_ai_services.dart';
 
 /// --- Cubit & State ---

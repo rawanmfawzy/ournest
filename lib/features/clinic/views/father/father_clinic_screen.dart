@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../settings/mother/views/settings_screen.dart';
 
+import '../../../settings/mother/views/mather_settings.dart';
 import '../../widgets/clinic_tap.dart';
-import '../../widgets/feeding_tap.dart';
 import '../../widgets/skin_tap.dart';
 
 class ClinicScreenfather extends StatefulWidget {
@@ -26,7 +25,7 @@ class _ClinicScreenfatherState extends State<ClinicScreenfather>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 2, vsync: this);
   }
 
   @override

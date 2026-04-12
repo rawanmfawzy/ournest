@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ournest/core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../settings/mother/views/settings_screen.dart';
+import '../../../settings/mother/views/mather_settings.dart';
 import 'Reminder_Screen.dart';
 import 'To_do_List_Screen.dart';
 
@@ -132,7 +132,7 @@ class ListScreen extends StatelessWidget {
           border: Border.all(color: Colors.pink.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.07),
+              color: Colors.black.withValues(alpha: 0.07),
               blurRadius: 6.r,
               offset: const Offset(0, 3),
             ),

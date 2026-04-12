@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../settings/mother/views/settings_screen.dart';
 
+import '../../../settings/mother/views/mather_settings.dart';
+import '../../widgets/Medicines_tap.dart';
 import '../../widgets/clinic_tap.dart';
 import '../../widgets/feeding_tap.dart';
 import '../../widgets/skin_tap.dart';
@@ -26,7 +27,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -151,6 +152,9 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                       FeedingTab(),
 
                       /// FILE 3
+                      MedicinesTap(),
+
+                      /// FILE 4
                       SkinTab(),
                     ],
                   ),

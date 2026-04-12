@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
-import '../../../core/utils/appStyles.dart';
+import '../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_Icons.dart';
+import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../cubit/skin_cubit.dart';
-import '../models/message_model.dart';
 
 class SkinTab extends StatefulWidget {
   const SkinTab({super.key});
@@ -90,6 +89,9 @@ class _SkinTabState extends State<SkinTab> {
       source: ImageSource.gallery,
       imageQuality: 80,
     );
+
+    if (!mounted) return; // 👈 حماية من crash
+
     if (image != null) {
       context.read<SkinCubit>().addImage(File(image.path));
     }

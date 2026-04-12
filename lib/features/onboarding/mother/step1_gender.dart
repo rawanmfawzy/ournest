@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ournest/features/onboarding/mother/step9_birth_date.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
+import '../services/onboarding_data.dart';
 import 'step2_pregnant.dart';
 import '../../splash/views/background.dart';
 
@@ -45,13 +46,15 @@ class Step1Gender extends StatelessWidget {
                 color: AppColors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step2Pregnant(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.role = "Mother";
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step2Pregnant(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
 
@@ -78,13 +81,15 @@ class Step1Gender extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step9BirthDate(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.role = "Father";
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step9BirthDate(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
         ],

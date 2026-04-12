@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ournest/features/onboarding/mother/step8_estimated_conception.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../services/onboarding_data.dart';
 
 
 class Step7GestationalAge extends StatefulWidget {
@@ -55,7 +57,7 @@ class _Step7GestationalAgeState extends State<Step7GestationalAge> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
+                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -94,13 +96,29 @@ class _Step7GestationalAgeState extends State<Step7GestationalAge> {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step8EstimatedConception(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  final selectedWeek = weekController.selectedItem;
+                  final selectedDay = dayController.selectedItem;
+
+                  // 1️⃣ لازم يكون المستخدم غيّر الاختيار (مش أول قيمة افتراضية)
+                  if (selectedWeek == 0 && selectedDay == 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please select weeks and days")),
+                    );
+                    return;
+                  }
+
+                  // 2️⃣ لو كل حاجة تمام خزّن القيم
+                  OnboardingData.gestationalWeeks = selectedWeek;
+                  OnboardingData.gestationalDays = selectedDay;
+
+                  // 3️⃣ روح للصفحة اللي بعدها
+                  MyNavigator.goTo(
+                    context,
+                    const Step8EstimatedConception(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
         ],

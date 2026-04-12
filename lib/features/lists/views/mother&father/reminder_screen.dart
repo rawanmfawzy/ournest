@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../settings/mother/views/settings_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../settings/mother/views/mather_settings.dart';
 
 
 class ReminderScreen extends StatefulWidget {

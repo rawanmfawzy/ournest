@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../features/clinic/views/father/father_clinic_screen.dart';
 import '../../features/doctor/doctor_screen.dart';
-import '../../features/clinic/views/father/clinicscreen.dart';
-import '../../features/home/father_home_screen/views/fatherhomescreen.dart';
+import '../../features/home/father_home_screen/views/father_home_screen.dart';
 import '../../features/lists/views/mother&father/list_screen.dart';
-import '../utils/appColor.dart';
-import '../utils/appIcons.dart';
+import '../utils/app_colors.dart';
+import '../utils/app_Icons.dart';
 import 'custom_svg.dart';
 
 class ButtomNavigationBarFather extends StatefulWidget {

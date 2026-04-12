@@ -4,10 +4,12 @@ import '../../../core/utils/api_constants.dart';
 
 class SignupService {
   static Future signup({
-    required String email,
+    required String phone,
     required String password,
     required String confirmPassword,
-    required String name,
+    required String email,
+
+
   }) async {
     var url = Uri.parse("${ApiConstants.baseUrl}/auth/register");
 
@@ -15,14 +17,13 @@ class SignupService {
       url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "email": email,
+        "username": email,
         "password": password,
-        "confirmPassword": confirmPassword,
-        "name": name,
-        "role": "Mother"
+        "phoneNumber": phone,
       }),
-    );
-
+    ).timeout(const Duration(seconds: 15));
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) return jsonDecode(response.body);
     throw Exception("Signup failed: ${response.body}");
   }

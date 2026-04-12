@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ournest/features/onboarding/mother/step9_birth_date.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
+import '../services/onboarding_data.dart';
 
 
 class Step8EstimatedConception extends StatefulWidget {
@@ -79,7 +79,7 @@ class _Step8EstimatedConceptionState extends State<Step8EstimatedConception> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
+                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -118,13 +118,50 @@ class _Step8EstimatedConceptionState extends State<Step8EstimatedConception> {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step9BirthDate(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  try {
+                    final dayIndex = dayController.selectedItem;
+                    final monthIndex = monthController.selectedItem;
+                    final yearIndex = yearController.selectedItem;
+
+                    // 1️⃣ تأكد إن فيه اختيار منطقي
+                    if (days.isEmpty || years.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please select a valid date")),
+                      );
+                      return;
+                    }
+
+                    final day = int.parse(days[dayIndex].toString());
+                    final month = monthIndex + 1;
+                    final year = years[yearIndex];
+
+                    final date = DateTime(year, month, day);
+
+                    // 2️⃣ منع أي تاريخ غير منطقي (احتياطي)
+                    if (date.isAfter(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Date cannot be in the future")),
+                      );
+                      return;
+                    }
+
+                    // 3️⃣ حفظ البيانات
+                    OnboardingData.conceptionDate =
+                        date.toIso8601String().split("T").first;
+
+                    // 4️⃣ الانتقال
+                    MyNavigator.goTo(
+                      context,
+                      const Step9BirthDate(),
+                      type: NavigatorType.pushReplacement,
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please select a valid date")),
+                    );
+                  }
+                }
             ),
           ),
         ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/core/utils/appStyles.dart';
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/widgets/custom_buttom.dart';
 import '../../../../core/widgets/custom_svg.dart';
 
@@ -236,7 +236,7 @@ class _ChangeModePageState extends State<ChangeModePage> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF49C14E),
+            activeThumbColor: const Color(0xFF49C14E),
             inactiveThumbColor: Colors.grey[300],
             inactiveTrackColor: Colors.grey[200],
           ),

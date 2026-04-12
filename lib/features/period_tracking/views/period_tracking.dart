@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/core/utils/appStyles.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
-import '../../../core/utils/appImages.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../core/widgets/custom_svg.dart';
-import '../../settings/mother/views/settings_screen.dart';
+import '../../settings/mother/views/mather_settings.dart';
 
 class Periodtracking extends StatefulWidget {
   const Periodtracking({super.key});

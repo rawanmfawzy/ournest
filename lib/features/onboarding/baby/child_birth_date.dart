@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/core/utils/appIcons.dart';
 import 'package:ournest/core/widgets/custom_svg.dart';
 import 'package:ournest/features/onboarding/baby/baby_gender.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
 
 
-class childBirthDate extends StatefulWidget {
-  const childBirthDate({super.key});
+class ChildBirthDate extends StatefulWidget {
+  const ChildBirthDate({super.key});
 
   @override
-  State<childBirthDate> createState() => _childBirthDate();
+  State<ChildBirthDate> createState() => _ChildBirthDate();
 }
 
-class _childBirthDate extends State<childBirthDate> {
+class _ChildBirthDate extends State<ChildBirthDate> {
   final List<int> days = List.generate(31, (i) => i + 1);
 
   final List<String> months = [
@@ -72,7 +72,7 @@ class _childBirthDate extends State<childBirthDate> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
+                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -114,7 +114,7 @@ class _childBirthDate extends State<childBirthDate> {
               onPressed: () {
                 MyNavigator.goTo(
                   context,
-                  const babygender(),
+                  const BabyGender(),
                   type: NavigatorType.push,
                 );
               },

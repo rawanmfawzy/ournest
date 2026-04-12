@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ournest/features/onboarding/mother/step1_gender.dart';
 import '../../../core/cubit/user_cubit.dart';
 import '../../../core/cubit/user_state.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../onboarding/User_Doctor_Selection_Page.dart';
 import '../../onboarding/welcome_services_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -32,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
           if (state is UserSignupSuccess) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const WelcomeServicesPage()),
+              MaterialPageRoute(builder: (_) => const Step1Gender()),
             );
           } else if (state is UserSignupError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -65,8 +67,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // USER NAME
                 CustomTextField(
-                  label: "User Name",
-                  controller: cubit.signUpName,
+                  label: "User Email",
+                  controller: cubit.signUpEmail,
                   suffix1: const Icon(Icons.person_outline, color: Color(0xFFB34962)),
                 ),
                 SizedBox(height: 18.h),
@@ -121,18 +123,28 @@ class _SignUpPageState extends State<SignUpPage> {
                       text: "Sign Up",
                       width: double.infinity,
                       onPressed: () {
-                        final name = cubit.signUpName.text.trim();
+                        final email = cubit.signUpEmail.text.trim();
                         final phone = cubit.signUpPhoneNumber.text.trim();
                         final password = cubit.signUpPassword.text.trim();
                         final confirmPassword = cubit.confirmPassword.text.trim();
 
-                        if (name.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                        // EMAIL VALIDATION
+                        if (email.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Please enter email")),
+                          );
+                          return;
+                        }
+
+                        // BASIC FIELDS VALIDATION
+                        if (email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Please fill all fields")),
                           );
                           return;
                         }
 
+                        // PHONE VALIDATION
                         if (!RegExp(r'^\d{11}$').hasMatch(phone)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Please enter a valid phone number")),
@@ -140,15 +152,20 @@ class _SignUpPageState extends State<SignUpPage> {
                           return;
                         }
 
-                        if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).{6,}$').hasMatch(password)) {
+                        // PASSWORD STRENGTH VALIDATION
+                        if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).{6,}$')
+                            .hasMatch(password)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text(
-                                    "Password must be at least 6 characters and include a number and a special character")),
+                              content: Text(
+                                "Password must be at least 6 characters and include a number and a special character",
+                              ),
+                            ),
                           );
                           return;
                         }
 
+                        // CONFIRM PASSWORD VALIDATION
                         if (password != confirmPassword) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Passwords do not match")),
@@ -156,7 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           return;
                         }
 
-                        // Call Cubit signup
+                        // CALL SIGNUP
                         cubit.signup();
                       },
                       textStyle: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w600),

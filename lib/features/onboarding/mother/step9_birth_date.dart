@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/core/utils/appIcons.dart';
 import 'package:ournest/core/widgets/custom_svg.dart';
-import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
-import '../../auth/views/signup_page.dart';
+import '../../auth/views/login_page.dart';
 import '../../splash/views/background.dart';
+import '../services/model.dart';
+import '../services/onboarding_data.dart';
+import '../services/services.dart';
 class Step9BirthDate extends StatefulWidget {
   const Step9BirthDate({super.key});
 
@@ -115,7 +118,7 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
+                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -169,13 +172,71 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const SignUpPage(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () async {
+                  try {
+                    final prefs = await SharedPreferences.getInstance();
+                    final token = prefs.getString("token");
+
+                    if (token == null || token.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please login again")),
+                      );
+                      return;
+                    }
+
+                    // 🔥 هنا الحل الحقيقي
+                    final day = days[dayController.selectedItem];
+                    final month = monthController.selectedItem + 1;
+                    final year = years[yearController.selectedItem];
+
+                    final date = DateTime(year, month, day);
+
+                    OnboardingData.dateOfBirth =
+                        date.toIso8601String().split("T").first;
+
+                    print("DOB SAVED: ${OnboardingData.dateOfBirth}");
+
+                    // 2️⃣ Validate required fields BEFORE sending
+                    if (OnboardingData.role.isEmpty ||
+                        OnboardingData.height <= 0 ||
+                        OnboardingData.weight <= 0 ||
+                        OnboardingData.knowledgeType.isEmpty ||
+                        OnboardingData.dateOfBirth.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please complete all onboarding steps")),
+                      );
+                      return;
+                    }
+
+                    final onboarding = OnboardingRequest(
+                      isDoctor: OnboardingData.isDoctor,
+                      role: OnboardingData.role,
+                      isPregnant: OnboardingData.isPregnant,
+                      height: OnboardingData.height,
+                      weight: OnboardingData.weight,
+                      isFirstChild: OnboardingData.isFirstChild,
+                      knowledgeType: OnboardingData.knowledgeType,
+                      lastMenstrualDate: OnboardingData.lastMenstrualDate,
+                      gestationalWeeks: OnboardingData.gestationalWeeks,
+                      gestationalDays: OnboardingData.gestationalDays,
+                      conceptionDate: OnboardingData.conceptionDate,
+                      dateOfBirth: OnboardingData.dateOfBirth,
+                    );
+
+                    await OnboardingService.submit(onboarding, token);
+
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false,
+                    );
+
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error: $e")),
+                    );
+                  }
+                }
             ),
           ),
         ],

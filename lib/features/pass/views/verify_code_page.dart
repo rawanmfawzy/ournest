@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/custom_buttom.dart';
-import 'CreateNewPasswordPage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'Create_New_Password_Page.dart';
 
 
 class VerifyCodePage extends StatefulWidget {

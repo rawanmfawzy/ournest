@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
-import '../../../../core/utils/appStyles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
+import '../../../../core/utils/app_Styles.dart';
 import '../../../../core/widgets/custom_svg.dart';
+import '../../../pass/views/forget_password_page.dart';
 
 class Babyhomescreen extends StatefulWidget {
   const Babyhomescreen({super.key});
@@ -104,38 +105,70 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
           Positioned(
             top: 130.h,
             left: 132.w,
-            child: Container(
-              width: 115.w,
-              height: 118.h,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.transparent,
-                border: Border.all(
-                  color: AppColors.Pinky,
-                  width: 3,
-                ),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
 
-                    Text(
-                      "2 month 2 days",
-                      textAlign: TextAlign.center,
-                      style: AppStyles.textStyle20w700AY
-                          .copyWith(fontSize: 12, color: AppColors.Pinky),
+                /// أكبر دايرة
+                Container(
+                  width: 136.w,
+                  height: 130.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.Pinky,
+                      width: 2,
                     ),
-
-                    Text(
-                      "3.3 kg",
-                      textAlign: TextAlign.center,
-                      style: AppStyles.textStyle20w700AY
-                          .copyWith(fontSize: 12, color: AppColors.Pinky),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+
+                /// الدايرة اللي بعدها
+                Container(
+                  width: 113.w,
+                  height: 130.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.Pinky,
+                      width: 2,
+                    ),
+                  ),
+                ),
+
+                /// أصغر دايرة + النص
+                Container(
+                  width: 115.w,
+                  height: 108.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.Pinky,
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "2 month 2 days",
+                          style: AppStyles.textStyle20w700AY.copyWith(
+                            fontSize: 12,
+                            color: AppColors.Pinky,
+                          ),
+                        ),
+                        Text(
+                          "3.3 kg",
+                          style: AppStyles.textStyle20w700AY.copyWith(
+                            fontSize: 12,
+                            color: AppColors.Pinky,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -168,7 +201,7 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           Positioned(
             top: 360.h,
             left: 20.w,
@@ -178,12 +211,60 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
               runSpacing: 35.h,
               alignment: WrapAlignment.center,
               children: [
-                buildBabyCard(Appimages.feeding, "Feeding time"),
-                buildBabyCard(Appimages.naps, "Baby naps"),
-                buildBabyCard(Appimages.cry, "Reasons for a baby crying"),
-                buildBabyCard(Appimages.temperature, "Baby’s temperature"),
-                buildBabyCard(Appimages.food, "Baby’s feeding"),
-                buildBabyCard(Appimages.vaccine, "Baby’s vaccins"),
+                buildBabyCard(Appimages.feeding, "Feeding time",
+                   () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ForgetPasswordPage(),
+                    ),
+                  );
+                },),
+                buildBabyCard(Appimages.naps, "Baby naps",
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgetPasswordPage(),
+                      ),
+                    );
+                  },),
+                buildBabyCard(Appimages.cry, "Reasons for a baby crying",
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgetPasswordPage(),
+                      ),
+                    );
+                  },),
+                buildBabyCard(Appimages.temperature, "Baby’s temperature",
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgetPasswordPage(),
+                      ),
+                    );
+                  },),
+                buildBabyCard(Appimages.food, "Baby’s feeding",
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgetPasswordPage(),
+                      ),
+                    );
+                  },),
+                buildBabyCard(Appimages.vaccine, "Baby’s vaccins",
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgetPasswordPage(),
+                      ),
+                    );
+                  },),
               ],
             ),
           ),
@@ -204,13 +285,13 @@ class SolidCircle extends StatelessWidget {
   final bool isCurrent;
 
   const SolidCircle({
-    Key? key,
+    super.key,
     required this.size,
     required this.color,
     required this.text,
     this.textStyle,
     this.isCurrent = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,16 +336,14 @@ class SolidCircle extends StatelessWidget {
     );
   }
 }
-Widget buildBabyCard(String image, String title, {Color borderColor =const Color(0xFFFFC5D0)}) {
+Widget buildBabyCard(String image, String title,onTap, {Color borderColor =const Color(0xFFFFC5D0)}) {
   return Material(
     color: Colors.white,
     borderRadius: BorderRadius.circular(20.r),
     elevation: 4,
     child: InkWell(
       borderRadius: BorderRadius.circular(20.r),
-      onTap: () {
-        // هنا ممكن تحط action عند الضغط
-      },
+      onTap:onTap,
       child: Container(
         width: 150.w,
         padding: EdgeInsets.only(

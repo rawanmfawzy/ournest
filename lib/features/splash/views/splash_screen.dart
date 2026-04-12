@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appImages.dart';
+import '../../../core/utils/app_Images.dart';
 import '../../auth/views/login_page.dart';
 import 'background.dart';
 
@@ -34,6 +34,8 @@ class _SplashScreenState extends State<SplashScreen>
     ));
 
     Future.delayed(const Duration(seconds: 5), () {
+      if (!mounted) return;
+
       MyNavigator.goTo(
         context,
         const LoginPage(),

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
-import '../../../../core/utils/appStyles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
+import '../../../../core/utils/app_Styles.dart';
 import '../../../../core/widgets/custom_buttom.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../settings/father/views/settings.dart';
+import '../../../settings/father/views/father_settings.dart';
 
-class LinkPartnerScreen extends StatefulWidget {
-  const LinkPartnerScreen({super.key});
+class LinkFather extends StatefulWidget {
+  const LinkFather({super.key});
 
   @override
-  State<LinkPartnerScreen> createState() => _LinkPartnerScreenState();
+  State<LinkFather> createState() => _LinkFatherState();
 }
 
-class _LinkPartnerScreenState extends State<LinkPartnerScreen> {
+class _LinkFatherState extends State<LinkFather> {
   final TextEditingController codeController = TextEditingController();
 
   bool get isFilled => codeController.text.isNotEmpty;

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ournest/features/onboarding/baby/baby_weight.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
 
-class babygender extends StatelessWidget {
-  const babygender({super.key});
+class BabyGender extends StatelessWidget {
+  const BabyGender({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class babygender extends StatelessWidget {
               onPressed: () {
                 MyNavigator.goTo(
                   context,
-                  const baby_weight(),
+                  const BabyWeight(),
                   type: NavigatorType.push,
                 );
               },
@@ -86,7 +86,7 @@ class babygender extends StatelessWidget {
               onPressed: () {
                 MyNavigator.goTo(
                   context,
-                  const baby_weight(),
+                  const BabyWeight(),
                   type: NavigatorType.push,
                 );
               },

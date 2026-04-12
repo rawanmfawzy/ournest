@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../utils/appColor.dart';
-import '../utils/appStyles.dart';
+import '../utils/app_colors.dart';
+import '../utils/app_Styles.dart';
 class CustomTextField extends StatefulWidget {
   final String label;
   final Widget? hintWidget;

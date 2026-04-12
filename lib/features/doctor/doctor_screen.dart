@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../core/utils/appColor.dart';
-import '../../core/utils/appIcons.dart';
-import '../../core/utils/appImages.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../core/utils/app_Icons.dart';
+import '../../core/utils/app_Images.dart';
 import '../../core/widgets/custom_svg.dart';
-import '../settings/mother/views/settings_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../settings/mother/views/mather_settings.dart';
 
 
 class DoctorScreen extends StatelessWidget {
@@ -95,7 +96,7 @@ class DoctorScreen extends StatelessWidget {
                 border: Border.all(color: Colors.pink.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12.withOpacity(0.1),
+                    color: Colors.black12.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ournest/features/onboarding/baby/child_birth_date.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
-class newborn extends StatelessWidget {
-  const newborn({super.key});
+class Newborn extends StatelessWidget {
+  const Newborn({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class newborn extends StatelessWidget {
               onPressed: () {
                 MyNavigator.goTo(
                   context,
-                  const childBirthDate(),
+                  const ChildBirthDate(),
                   type: NavigatorType.push,
                 );
               },

@@ -12,7 +12,7 @@ class UserCubit extends Cubit<UserState> {
   Future<void> close() {
     signInEmail.dispose();
     signInPassword.dispose();
-    signUpName.dispose();
+    signUpEmail.dispose();
     signUpPhoneNumber.dispose();
     signUpPassword.dispose();
     confirmPassword.dispose();
@@ -24,7 +24,7 @@ class UserCubit extends Cubit<UserState> {
   TextEditingController signInPassword = TextEditingController();
 
   /// Sign Up Controllers
-  TextEditingController signUpName = TextEditingController();
+  TextEditingController signUpEmail = TextEditingController();
   TextEditingController signUpPhoneNumber = TextEditingController();
   TextEditingController signUpPassword = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
@@ -53,7 +53,7 @@ class UserCubit extends Cubit<UserState> {
       );
 
       /// Save token if login successful
-      if (result.containsKey("token")) {
+      if (result["success"] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString("token", result["token"]);
 
@@ -74,19 +74,24 @@ class UserCubit extends Cubit<UserState> {
       emit(UserLoading());
 
       final result = await SignupService.signup(
-        email: signUpPhoneNumber.text.trim(),
+        email: signUpEmail.text.trim(),
+        phone: signUpPhoneNumber.text.trim(),
         password: signUpPassword.text.trim(),
         confirmPassword: confirmPassword.text.trim(),
-        name: signUpName.text.trim(),
       );
 
-      if (result.containsKey("token")) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
+      // 🧠 استخراج التوكن
+      final token = result["token"];
+      final refreshToken = result["refreshToken"];
 
-        await prefs.setString("token", result["token"]);
+      // 💾 حفظ التوكن
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
 
-        if (result.containsKey("refreshToken")) {
-          await prefs.setString("refreshToken", result["refreshToken"]);
+        await prefs.setString("token", token);
+
+        if (refreshToken != null) {
+          await prefs.setString("refreshToken", refreshToken);
         }
       }
 
@@ -95,7 +100,6 @@ class UserCubit extends Cubit<UserState> {
       emit(UserSignupError(e.toString()));
     }
   }
-
   /// SOCIAL LOGIN
   Future<void> socialLogin(String provider) async {
     try {

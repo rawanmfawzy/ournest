@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

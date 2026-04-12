@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
+import '../services/onboarding_data.dart';
 import 'step5_knowledge.dart';
 import '../../splash/views/background.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,13 +43,15 @@ class Step4FirstChild extends StatelessWidget {
                 color: AppColors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step5Knowledge(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.isFirstChild = true;
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step5Knowledge(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
           Positioned(
@@ -73,13 +76,15 @@ class Step4FirstChild extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step5Knowledge(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.isFirstChild = false;
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step5Knowledge(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
         ],

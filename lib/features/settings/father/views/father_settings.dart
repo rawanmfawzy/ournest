@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/helper/my_navgator.dart';
-import '../../../../core/utils/appColor.dart';
-import '../../../../core/utils/appIcons.dart';
-import '../../../../core/utils/appImages.dart';
-import '../../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -118,7 +118,7 @@ class SettingsScreenfather extends StatelessWidget {
                     title: "Share with partner",
                     onTap: () { MyNavigator.goTo(
                       context,
-                      const LinkPartnerScreen(),
+                      const LinkFather(),
                       type: NavigatorType.push,
                     );},
                   ),

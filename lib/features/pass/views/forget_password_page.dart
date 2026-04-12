@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/core/utils/appIcons.dart';
-
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 
 import 'verify_code_page.dart';
 

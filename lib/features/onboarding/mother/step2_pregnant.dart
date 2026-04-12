@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
+import '../services/onboarding_data.dart';
 import 'Step2_Not_Pregnant.dart';
 import 'step3_weight_height.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -44,13 +45,15 @@ class Step2Pregnant extends StatelessWidget {
                 color: AppColors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step3WeightHeight(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.isPregnant = true;
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step3WeightHeight(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
           Positioned(
@@ -75,13 +78,15 @@ class Step2Pregnant extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step2NotPregnant(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.isPregnant = false;
+
+                  MyNavigator.goTo(
+                    context,
+                    const Step2NotPregnant(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
         ],

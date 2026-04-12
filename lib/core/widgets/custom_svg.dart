@@ -23,9 +23,11 @@ class CustomSvg extends StatelessWidget {
       onTap: onTap,
       child: SvgPicture.asset(
         path,
-        color: color,
         width: width,
         height: height,
+        colorFilter: color != null
+            ? ColorFilter.mode(color!, BlendMode.srcIn)
+            : null,
       ),
     );
   }

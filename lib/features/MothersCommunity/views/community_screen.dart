@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appIcons.dart';
-import '../../../core/utils/appImages.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_text_field.dart';
-import '../../settings/mother/views/settings_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../settings/mother/views/mather_settings.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -186,7 +187,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.Pinky.withOpacity(.3)),
+        border: Border.all(color: AppColors.Pinky.withValues(alpha: 0.3)),
         color: Colors.white,
       ),
       child: Column(

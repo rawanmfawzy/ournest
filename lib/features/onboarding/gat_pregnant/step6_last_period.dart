@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ournest/features/onboarding/mother/step7_gestational_age.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../splash/views/background.dart';
+import '../services/onboarding_data.dart';
 
 class Step6LastPeriod extends StatefulWidget {
   const Step6LastPeriod({super.key});
@@ -74,7 +75,7 @@ class _Step6LastPeriodState extends State<Step6LastPeriod> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
+                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -113,13 +114,50 @@ class _Step6LastPeriodState extends State<Step6LastPeriod> {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const Step7GestationalAge(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  try {
+                    final dayIndex = dayController.selectedItem;
+                    final monthIndex = monthController.selectedItem;
+                    final yearIndex = yearController.selectedItem;
+
+                    // 1️⃣ تأكد إن القوائم مش فاضية
+                    if (days.isEmpty || years.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please select a valid date")),
+                      );
+                      return;
+                    }
+
+                    final day = int.parse(days[dayIndex].toString());
+                    final month = monthIndex + 1;
+                    final year = years[yearIndex];
+
+                    final date = DateTime(year, month, day);
+
+                    // 2️⃣ منع تاريخ في المستقبل
+                    if (date.isAfter(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Date cannot be in the future")),
+                      );
+                      return;
+                    }
+
+                    // 3️⃣ حفظ الداتا
+                    OnboardingData.lastMenstrualDate =
+                        date.toIso8601String().split("T").first;
+
+                    // 4️⃣ الانتقال
+                    MyNavigator.goTo(
+                      context,
+                      const Step7GestationalAge(),
+                      type: NavigatorType.pushReplacement,
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please select a valid date")),
+                    );
+                  }
+                }
             ),
           ),
         ],

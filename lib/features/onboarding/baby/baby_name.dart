@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../core/utils/appStyles.dart';
+import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../splash/views/background.dart';
 
-class babyname extends StatelessWidget {
-  const babyname({super.key});
+class BabyName extends StatelessWidget {
+  const BabyName({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController heightController = TextEditingController();
-    TextEditingController weightController = TextEditingController();
 
     return  GestureDetector(
         onTap: ()
@@ -29,7 +27,6 @@ class babyname extends StatelessWidget {
             left: 28.w,
             child: CustomTextField(
               label: "Enter your baby’s name",
-              controller: heightController,
               hintWidget: const Text("Enter your baby’s name"),
               width: 342.w,
               height: 52.h,

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
-import 'Step2_Not_Pregnant.dart';
 import '../gat_pregnant/cycle_of_period.dart';
 import '../baby/newborn.dart';
-import 'step3_weight_height.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../services/onboarding_data.dart';
 
 
 class Step2NotPregnant extends StatelessWidget {
@@ -61,13 +61,15 @@ class Step2NotPregnant extends StatelessWidget {
                 color: AppColors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const cycleofperiod(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.wantsPregnancy = true;
+
+                  MyNavigator.goTo(
+                    context,
+                    const CycleOfPeriod(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
 
@@ -94,13 +96,15 @@ class Step2NotPregnant extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 16.sp,
               ),
-              onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const newborn(),
-                  type: NavigatorType.push,
-                );
-              },
+                onPressed: () {
+                  OnboardingData.wantsPregnancy = false;
+
+                  MyNavigator.goTo(
+                    context,
+                    const Newborn(),
+                    type: NavigatorType.pushReplacement,
+                  );
+                }
             ),
           ),
         ],

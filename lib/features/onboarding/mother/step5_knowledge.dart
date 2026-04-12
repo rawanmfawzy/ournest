@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:ournest/core/utils/appIcons.dart';
 import 'package:ournest/features/onboarding/mother/step7_gestational_age.dart';
 import 'package:ournest/features/onboarding/mother/step8_estimated_conception.dart';
 import '../../../core/helper/my_navgator.dart';
-import '../../../core/utils/appColor.dart';
-import '../../../core/utils/appStyles.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../gat_pregnant/step6_last_period.dart';
+import '../services/onboarding_data.dart';
 class Step5Knowledge extends StatelessWidget {
   const Step5Knowledge({super.key});
 
@@ -51,13 +52,15 @@ class Step5Knowledge extends StatelessWidget {
               children: [
                 CustomButton(
                   text: "Date of Last menstruation",
-                  onPressed: () {
-                    MyNavigator.goTo(
-                      context,
-                      const Step6LastPeriod(),
-                      type: NavigatorType.push,
-                    );
-                  },
+              onPressed: () {
+                OnboardingData.knowledgeType = "last_menstrual";
+
+                MyNavigator.goTo(
+                  context,
+                  const Step6LastPeriod(),
+                  type: NavigatorType.pushReplacement,
+                );
+              },
                   textStyle: AppStyles.textStyle20w700AY.copyWith(
                     color: AppColors.white,
                     fontSize: 14.sp,
@@ -72,10 +75,12 @@ class Step5Knowledge extends StatelessWidget {
                 CustomButton(
                   text: "Number of weeks of pregnant",
                   onPressed: () {
+                    OnboardingData.knowledgeType = "gestational";
+
                     MyNavigator.goTo(
                       context,
                       const Step7GestationalAge(),
-                      type: NavigatorType.push,
+                      type: NavigatorType.pushReplacement,
                     );
                   },
                   textStyle: AppStyles.textStyle20w700AY.copyWith(
@@ -92,10 +97,12 @@ class Step5Knowledge extends StatelessWidget {
                 CustomButton(
                   text: "Estimated due date",
                   onPressed: () {
+                    OnboardingData.knowledgeType = "conception";
+
                     MyNavigator.goTo(
                       context,
                       const Step8EstimatedConception(),
-                      type: NavigatorType.push,
+                      type: NavigatorType.pushReplacement,
                     );
                   },
                   textStyle: AppStyles.textStyle20w700AY.copyWith(

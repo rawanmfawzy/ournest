@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../core/utils/appIcons.dart';
+import '../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_svg.dart';
-import '../../../core/utils/appStyles.dart';
+import '../../../core/utils/app_Styles.dart';
 import '../cubit/clinic_cubit.dart';
-import '../models/message_model.dart';
 
 class ClinicTab extends StatefulWidget {
   const ClinicTab({super.key});

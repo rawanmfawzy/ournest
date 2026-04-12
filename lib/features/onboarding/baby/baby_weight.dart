@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ournest/features/onboarding/baby/baby_name.dart';
-import '../../../core/utils/appStyles.dart';
+import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../splash/views/background.dart';
 
-class baby_weight extends StatelessWidget {
-  const baby_weight({super.key});
+class BabyWeight extends StatelessWidget {
+  const BabyWeight({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController heightController = TextEditingController();
     TextEditingController weightController = TextEditingController();
 
     return  GestureDetector(
@@ -55,7 +54,7 @@ class baby_weight extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const babyname()),
+                  MaterialPageRoute(builder: (_) => const BabyName()),
                 );
               },
             ),

@@ -8,24 +8,25 @@ import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_Icons.dart';
 import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_svg.dart';
-import '../cubit/feeding_cubit.dart';
-/// --- UI Feeding Tab ---
-class FeedingTab extends StatefulWidget {
-  const FeedingTab({super.key});
+import '../cubit/skin_cubit.dart';
+
+class MedicinesTap extends StatefulWidget {
+  const MedicinesTap({super.key});
 
   @override
-  State<FeedingTab> createState() => _FeedingTabState();
+  State<MedicinesTap> createState() => _MedicinesTapState();
 }
 
-class _FeedingTabState extends State<FeedingTab> {
+class _MedicinesTapState extends State<MedicinesTap> {
   final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FeedingCubit, FeedingState>(
+    return BlocBuilder<SkinCubit, SkinState>(
       builder: (context, state) {
         return Column(
           children: [
+            // قائمة الصور
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.all(10),
@@ -40,6 +41,7 @@ class _FeedingTabState extends State<FeedingTab> {
               ),
             ),
 
+            // زر Attach
             Padding(
               padding: EdgeInsets.all(10),
               child: GestureDetector(
@@ -81,21 +83,21 @@ class _FeedingTabState extends State<FeedingTab> {
     );
   }
 
-  /// اختيار صورة وتحديد modelType
+  // دالة اختيار الصورة من الجهاز
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
 
-    if (!mounted) return;
+    if (!mounted) return; // 👈 أهم سطر ضد crash
 
     if (image != null) {
-      String modelType = "food";
-      context.read<FeedingCubit>().addImage(File(image.path), modelType);
+      context.read<SkinCubit>().addImage(File(image.path));
     }
   }
 
+  // Bubble للصورة
   Widget imageBubble(File imageFile) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -108,7 +110,12 @@ class _FeedingTabState extends State<FeedingTab> {
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: Colors.grey.shade400),
             ),
-            child: Image.file(imageFile, width: 150.w, height: 150.h, fit: BoxFit.cover),
+            child: Image.file(
+              imageFile,
+              width: 150.w,
+              height: 150.h,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ],
