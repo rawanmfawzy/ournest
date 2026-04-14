@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/cubit/user_cubit.dart';
+import '../../../../core/cubit/user_state.dart';
 import '../../../../core/helper/my_navgator.dart';
 import 'package:ournest/core/utils/app_Styles.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -6,7 +9,7 @@ import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import '../../../auth/views/login_page.dart';
 import '../../../link/mother/views/mother_link.dart';
 import 'change_mode.dart';
 
@@ -16,7 +19,17 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<UserCubit, UserState>(
+        listener: (context, state) {
+          if (state is UserLogoutSuccess) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+            );
+          }
+        },
+        child: Scaffold(
         backgroundColor: const Color(0xFFFFE6EA),
         body: Container(
             width: double.infinity,
@@ -221,12 +234,15 @@ class SettingsScreen extends StatelessWidget {
     height: 24.h,
     ),
               title: "Log out",
-              onTap: () {},
+              onTap: () {
+                context.read<UserCubit>().logout();
+              },
             ),
           ),
             ],
       ),
       ),
+        ),
         ),
     );
   }

@@ -3,48 +3,90 @@ import 'package:http/http.dart' as http;
 import '../../../core/utils/api_constants.dart';
 
 class LoginService {
-  static Future login({
+
+  static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) async {
-    var url = Uri.parse("${ApiConstants.baseUrl}/auth/login");
+    final url = Uri.parse("${ApiConstants.baseUrl}/auth/login");
 
-    var response = await http.post(
+    final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "password": password}),
+      body: jsonEncode({
+        "username": email,
+        "password": password,
+      }),
     );
 
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception("Login failed: ${response.body}");
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data["success"] == true) {
+      return data;
+    }
+
+    throw Exception(data["error"] ?? "Login failed");
   }
 
   static Future<Map<String, dynamic>> loginWithGoogle() async {
-    var url = Uri.parse("${ApiConstants.baseUrl}/auth/google");
+    final url = Uri.parse("${ApiConstants.baseUrl}/auth/google");
 
-    var response = await http.post(url, headers: {"Content-Type": "application/json"});
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception("Google login failed: ${response.body}");
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data["success"] == true) {
+      return data;
+    }
+
+    throw Exception(data["error"] ?? "Google login failed");
   }
 
   static Future<Map<String, dynamic>> loginWithFacebook() async {
-    var url = Uri.parse("${ApiConstants.baseUrl}/auth/facebook");
+    final url = Uri.parse("${ApiConstants.baseUrl}/auth/facebook");
 
-    var response = await http.post(url, headers: {"Content-Type": "application/json"});
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception("Facebook login failed: ${response.body}");
-  }
-
-  static Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
-    var url = Uri.parse("${ApiConstants.baseUrl}/auth/refresh");
-
-    var response = await http.post(
+    final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"refreshToken": refreshToken}),
     );
 
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception("Refresh token failed: ${response.body}");
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data["success"] == true) {
+      return data;
+    }
+
+    throw Exception(data["error"] ?? "Facebook login failed");
+  }
+
+  static Future<Map<String, dynamic>> refreshToken(
+      String token,
+      String refreshToken,
+      ) async {
+
+    final url = Uri.parse("${ApiConstants.baseUrl}/auth/refresh");
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({
+        "token": token,
+        "refreshToken": refreshToken,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data["success"] == true) {
+      return data;
+    }
+
+    throw Exception(data["error"] ?? "Refresh token failed");
   }
 }

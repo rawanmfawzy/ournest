@@ -1,49 +1,32 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ournest/core/cubit/token_storage_helper.dart';
 import '../../features/auth/services/login_service.dart';
 import '../../features/auth/services/signup_service.dart';
 import 'user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserInitial());
-  @override
-  Future<void> close() {
-    signInEmail.dispose();
-    signInPassword.dispose();
-    signUpEmail.dispose();
-    signUpPhoneNumber.dispose();
-    signUpPassword.dispose();
-    confirmPassword.dispose();
-    return super.close();
-  }
 
-  /// Sign In Controllers
-  TextEditingController signInEmail = TextEditingController();
-  TextEditingController signInPassword = TextEditingController();
+  final TextEditingController signInEmail = TextEditingController();
+  final TextEditingController signInPassword = TextEditingController();
 
-  /// Sign Up Controllers
-  TextEditingController signUpEmail = TextEditingController();
-  TextEditingController signUpPhoneNumber = TextEditingController();
-  TextEditingController signUpPassword = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
+  final TextEditingController signUpEmail = TextEditingController();
+  final TextEditingController signUpPhoneNumber = TextEditingController();
+  final TextEditingController signUpPassword = TextEditingController();
+  final TextEditingController confirmPassword = TextEditingController();
 
-  /// Remember Me
   bool rememberMe = false;
-
-  /// Profile Image
   XFile? profilePic;
 
-  /// Pick Profile Image
-  Future<void> pickProfilePic() async {
-    final ImagePicker picker = ImagePicker();
-    profilePic = await picker.pickImage(source: ImageSource.gallery);
-    emit(UserImagePicked());
-  }
-
-  /// LOGIN FUNCTION
+  /// LOGIN
   Future<void> login() async {
+    if (signInEmail.text.isEmpty || signInPassword.text.isEmpty) {
+      emit(UserLoginError("Please fill all fields"));
+      return;
+    }
+
     try {
       emit(UserLoading());
 
@@ -52,14 +35,10 @@ class UserCubit extends Cubit<UserState> {
         password: signInPassword.text.trim(),
       );
 
-      /// Save token if login successful
-      if (result["success"] == true) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString("token", result["token"]);
+      await TokenStorage.saveToken(result["token"]);
 
-        if (rememberMe) {
-          await prefs.setString("email", signInEmail.text.trim());
-        }
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
       }
 
       emit(UserLoginSuccess(result));
@@ -68,7 +47,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  /// SIGNUP FUNCTION
+  /// SIGNUP
   Future<void> signup() async {
     try {
       emit(UserLoading());
@@ -80,19 +59,12 @@ class UserCubit extends Cubit<UserState> {
         confirmPassword: confirmPassword.text.trim(),
       );
 
-      // 🧠 استخراج التوكن
-      final token = result["token"];
-      final refreshToken = result["refreshToken"];
+      if (result["token"] != null) {
+        await TokenStorage.saveToken(result["token"]);
+      }
 
-      // 💾 حفظ التوكن
-      if (token != null) {
-        final prefs = await SharedPreferences.getInstance();
-
-        await prefs.setString("token", token);
-
-        if (refreshToken != null) {
-          await prefs.setString("refreshToken", refreshToken);
-        }
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
       }
 
       emit(UserSignupSuccess(result));
@@ -100,58 +72,77 @@ class UserCubit extends Cubit<UserState> {
       emit(UserSignupError(e.toString()));
     }
   }
+
   /// SOCIAL LOGIN
   Future<void> socialLogin(String provider) async {
     try {
       emit(UserLoading());
 
-      Map<String, dynamic> result;
+      final result = provider == "google"
+          ? await LoginService.loginWithGoogle()
+          : await LoginService.loginWithFacebook();
 
-      if (provider == "google") {
-        result = await LoginService.loginWithGoogle();
-      } else if (provider == "facebook") {
-        result = await LoginService.loginWithFacebook();
+      if (result["success"] == true) {
+        await TokenStorage.saveToken(result["token"]);
+
+        if (result["refreshToken"] != null) {
+          await TokenStorage.saveRefreshToken(result["refreshToken"]);
+        }
+
+        emit(UserLoginSuccess(result));
       } else {
-        throw Exception("Unknown social provider");
+        emit(UserLoginError(result["error"] ?? "Social login failed"));
       }
-
-      if (result.containsKey("token")) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        await prefs.setString("token", result["token"]);
-
-        if (result.containsKey("refreshToken")) {
-          await prefs.setString("refreshToken", result["refreshToken"]);
-        }
-
-        if (rememberMe) {
-          await prefs.setString("email", signInEmail.text.trim());
-        }
-      }
-
-      emit(UserLoginSuccess(result));
     } catch (e) {
       emit(UserLoginError(e.toString()));
     }
+  }
+  ///user logout
+  Future<void> logout() async {
+    emit(UserLogoutLoading());
+
+    await TokenStorage.clear(); // 👈 أهم خطوة
+
+    emit(UserLogoutSuccess());
   }
 
   /// REFRESH TOKEN
   Future<void> refreshToken() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? refreshToken = prefs.getString("refreshToken");
+      final token = await TokenStorage.getToken();
+      final refresh = await TokenStorage.getRefreshToken();
 
-      if (refreshToken == null) return;
+      if (token == null || refresh == null) return;
 
-      final newToken = await LoginService.refreshToken(refreshToken);
+      final result = await LoginService.refreshToken(token, refresh);
 
-      if (newToken.containsKey("token")) {
-        await prefs.setString("token", newToken["token"]);
+      await TokenStorage.saveToken(result["token"]);
+
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
       }
 
-      emit(UserTokenRefreshed(newToken));
+      emit(UserTokenRefreshed(result));
     } catch (e) {
       emit(UserRefreshTokenError(e.toString()));
     }
+  }
+
+  /// IMAGE PICKER
+  Future<void> pickProfilePic() async {
+    final picker = ImagePicker();
+    profilePic = await picker.pickImage(source: ImageSource.gallery);
+    emit(UserImagePicked());
+  }
+
+  @override
+  Future<void> close() {
+    signInEmail.dispose();
+    signInPassword.dispose();
+    signUpEmail.dispose();
+    signUpPhoneNumber.dispose();
+    signUpPassword.dispose();
+    confirmPassword.dispose();
+    return super.close();
   }
 }

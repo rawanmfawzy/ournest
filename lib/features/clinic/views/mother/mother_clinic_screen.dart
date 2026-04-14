@@ -133,6 +133,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                   tabs: const [
                     Tab(text: "Clinic"),
                     Tab(text: "Feeding"),
+                    Tab(text: "Medicines"),
                     Tab(text: "Skin"),
                   ],
                 ),

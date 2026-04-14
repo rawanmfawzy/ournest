@@ -5,6 +5,7 @@ import 'package:ournest/features/auth/views/login_page.dart';
 import 'package:ournest/features/splash/views/background.dart';
 import 'package:ournest/features/splash/views/splash_screen.dart';
 import 'core/cubit/user_cubit.dart';
+import 'features/MothersCommunity/cubit/communitycubit.dart';
 import 'features/clinic/cubit/clinic_cubit.dart';
 import 'features/clinic/cubit/feeding_cubit.dart';
 import 'features/clinic/cubit/skin_cubit.dart';
@@ -24,6 +25,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<FeedingCubit>(create: (_) => FeedingCubit()),
         BlocProvider<SkinCubit>(create: (_) => SkinCubit()),
 
+        // ✅ ADD THIS
+        BlocProvider<CommunityCubit>(
+          create: (_) => CommunityCubit(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),

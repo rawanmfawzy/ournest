@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../core/helper/my_navgator.dart';
+
+import '../../../core/cubit/token_storage_helper.dart';
 import '../../../core/utils/app_Images.dart';
+import '../../../core/widgets/buttom_navigation_bar_mother.dart';
 import '../../auth/views/login_page.dart';
 import 'background.dart';
 
@@ -27,21 +29,35 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
 
-    _scaleAnimation = Tween<double>(begin: 1, end: 1.1)
-        .animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 1, end: 1.1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
 
-    Future.delayed(const Duration(seconds: 5), () {
-      if (!mounted) return;
-
-      MyNavigator.goTo(
-        context,
-        const LoginPage(),
-        type: NavigatorType.pushReplacement,
-      );
+    Future.delayed(const Duration(seconds: 3), () {
+      checkLogin(); // ✅ هنا الصح
     });
+  }
+
+  Future<void> checkLogin() async {
+    final hasToken = await TokenStorage.hasToken();
+
+    if (!mounted) return;
+
+    if (hasToken) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ButtomNavigationBarmother(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginPage(),
+        ),
+      );
+    }
   }
 
   @override
@@ -58,7 +74,6 @@ class _SplashScreenState extends State<SplashScreen>
 
           const SplashDecorations(),
 
-
           Positioned(
             top: 269.h,
             left: 97.w,
@@ -73,11 +88,10 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // TEXT "OUR NEST"
           Positioned(
             top: 365.h,
             left: 95.w,
-            child:Image.asset(
+            child: Image.asset(
               Appimages.text_our_nest,
               width: 182.w,
               height: 274.h,
