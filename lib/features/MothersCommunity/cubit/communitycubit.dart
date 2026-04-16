@@ -7,14 +7,13 @@ class CommunityCubit extends Cubit<CommunityState> {
 
   List posts = [];
 
-  // ================= POSTS =================
   Future<void> getPosts() async {
     try {
       emit(CommunityLoading());
 
       posts = await CommunityService.getPosts();
 
-      emit(CommunitySuccess(posts));
+      emit(PostsSuccess(posts));
     } catch (e) {
       emit(CommunityError(e.toString()));
     }
@@ -26,8 +25,6 @@ class CommunityCubit extends Cubit<CommunityState> {
     required String category,
   }) async {
     try {
-      emit(CommunityLoading());
-
       await CommunityService.createPost(
         content: content,
         imageUrl: imageUrl,
@@ -42,40 +39,20 @@ class CommunityCubit extends Cubit<CommunityState> {
 
   Future<void> likePost(String postId) async {
     try {
-      final response = await CommunityService.toggleLike(postId);
+      final res = await CommunityService.toggleLike(postId);
 
       posts = posts.map((post) {
         final p = Map<String, dynamic>.from(post);
 
         if (p["id"] == postId) {
-          p["liked"] = response["liked"];
-          p["likesCount"] = response["likesCount"];
+          p["likesCount"] = res["likesCount"];
+          p["isLikedByCurrentUser"] = res["liked"];
         }
 
         return p;
       }).toList();
 
-      emit(CommunitySuccess(posts));
-    } catch (e) {
-      emit(CommunityError(e.toString()));
-    }
-  }
-
-  Future<void> addComment(String postId, String content) async {
-    try {
-      await CommunityService.addComment(postId, content);
-
-      await getPosts();
-    } catch (e) {
-      emit(CommunityError(e.toString()));
-    }
-  }
-
-  Future<void> addReply(String commentId, String content) async {
-    try {
-      await CommunityService.addReply(commentId, content);
-
-      await getPosts();
+      emit(PostsSuccess(posts));
     } catch (e) {
       emit(CommunityError(e.toString()));
     }

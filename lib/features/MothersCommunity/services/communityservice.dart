@@ -8,23 +8,19 @@ class CommunityService {
   static Future<List<dynamic>> getPosts() async {
     final token = await TokenStorage.getToken();
 
-    final url = Uri.parse("${ApiConstants.baseUrl}/community/posts");
-
     final response = await http.get(
-      url,
+      Uri.parse("${ApiConstants.baseUrl}/community/posts"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
     );
 
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200 && data is List) {
-      return data;
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
     }
-
-    throw Exception(response.body);
   }
 
   static Future<Map<String, dynamic>> createPost({
@@ -34,10 +30,8 @@ class CommunityService {
   }) async {
     final token = await TokenStorage.getToken();
 
-    final url = Uri.parse("${ApiConstants.baseUrl}/community/posts");
-
     final response = await http.post(
-      url,
+      Uri.parse("${ApiConstants.baseUrl}/community/posts"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
@@ -49,64 +43,96 @@ class CommunityService {
       }),
     );
 
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return data;
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
     }
-
-    throw Exception(response.body);
   }
 
   static Future<Map<String, dynamic>> toggleLike(String postId) async {
     final token = await TokenStorage.getToken();
 
-    final url = Uri.parse(
-      "${ApiConstants.baseUrl}/community/posts/$postId/like",
-    );
-
     final response = await http.post(
-      url,
+      Uri.parse("${ApiConstants.baseUrl}/community/posts/$postId/like"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
     );
 
-    return jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
+    }
   }
 
   static Future<void> addComment(String postId, String content) async {
     final token = await TokenStorage.getToken();
 
-    final url = Uri.parse(
-      "${ApiConstants.baseUrl}/community/posts/$postId/comments",
-    );
-
-    await http.post(
-      url,
+    final response = await http.post(
+      Uri.parse("${ApiConstants.baseUrl}/community/posts/$postId/comments"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
       body: jsonEncode({"content": content}),
     );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
+    }
+  }
+
+  static Future<List<dynamic>> getComments(String postId) async {
+    final token = await TokenStorage.getToken();
+
+    final res = await http.get(
+      Uri.parse("${ApiConstants.baseUrl}/community/posts/$postId/comments"),
+      headers: {
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body);
+    } else {
+      throw Exception(jsonDecode(res.body)["message"] ?? "Error");
+    }
+  }
+
+  static Future<List<dynamic>> getReplies(String commentId) async {
+    final token = await TokenStorage.getToken();
+
+    final res = await http.get(
+      Uri.parse("${ApiConstants.baseUrl}/community/comments/$commentId/replies"),
+      headers: {
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body);
+    } else {
+      throw Exception(jsonDecode(res.body)["message"] ?? "Error");
+    }
   }
 
   static Future<void> addReply(String commentId, String content) async {
     final token = await TokenStorage.getToken();
 
-    final url = Uri.parse(
-      "${ApiConstants.baseUrl}/community/comments/$commentId/replies",
-    );
-
-    await http.post(
-      url,
+    final response = await http.post(
+      Uri.parse("${ApiConstants.baseUrl}/community/comments/$commentId/replies"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
       body: jsonEncode({"content": content}),
     );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
+    }
   }
 }

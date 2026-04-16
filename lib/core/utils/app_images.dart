@@ -21,6 +21,10 @@ abstract class Appimages{
   static const String temperature='${_imagePath}temperature.jpg';
   static const String vaccine='${_imagePath}vaccine.jpg';
   static const String fatherimage='${_imagePath}fatherimage.jpg';
+  static const String exc1='${_imagePath}ex1.png';
+  static const String exc2='${_imagePath}ex2.png';
+
+
 
 
 

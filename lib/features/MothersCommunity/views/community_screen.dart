@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart';
 import 'package:ournest/core/utils/app_Styles.dart';
+import 'package:ournest/features/MothersCommunity/views/post_comments_screen.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
@@ -148,7 +148,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                         );
                       }
 
-                      if (state is CommunitySuccess) {
+                      if (state is PostsSuccess) {
                         final posts = state.posts;
 
                         return ListView(
@@ -193,14 +193,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
                             /// POSTS FROM API
                             ...posts.map((post) {
-                              return _postCard(
-                                id: post["id"],
-                                user: post["authorName"] ?? "",
-                                text: post["content"] ?? "",
-                                image: post["imageUrl"],
-                                likesCount: post["likesCount"] ?? 0,
-                                commentsCount: post["commentsCount"] ?? 0,
-                              );
+                              return _postCard(post: post);
                             }).toList(),
 
                             const SizedBox(height: 80),
@@ -221,14 +214,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   /// POST CARD (UI كما هو)
-  Widget _postCard({
-    required String id,
-    required String user,
-    required String text,
-    String? image,
-    required int likesCount,
-    required int commentsCount,
-  }) {
+  Widget _postCard({required Map post}){
+    final id = post["id"];
+    final user = post["authorName"] ?? "";
+    final text = post["content"] ?? "";
+    final likesCount = post["likesCount"] ?? 0;
+    final commentsCount = post["commentsCount"] ?? 0;
+    final image = post["imageUrl"];
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(14),
@@ -302,7 +294,12 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
               GestureDetector(
                 onTap: () {
-                  _showCommentDialog(context, id);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PostCommentsScreen(post: post),
+                    ),
+                  );
                 },
                 child: CustomSvg(
                   path: AppIcons.message,
@@ -327,41 +324,4 @@ class _CommunityScreenState extends State<CommunityScreen> {
       ),
     );
   }
-}
-
-/// COMMENT DIALOG
-void _showCommentDialog(BuildContext context, String postId) {
-  final controller = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (_) {
-      return AlertDialog(
-        title: const Text("Add Comment"),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            hintText: "Write comment...",
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<CommunityCubit>().addComment(
-                postId,
-                controller.text,
-              );
-
-              Navigator.pop(context);
-            },
-            child: const Text("Send"),
-          ),
-        ],
-      );
-    },
-  );
 }
