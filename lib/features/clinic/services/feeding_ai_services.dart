@@ -9,7 +9,7 @@ class FeedingAIService {
   final String baseUrl = "${ApiConstants.baseUrl}/ai";
 
   Future<String> sendImage(File imageFile, String modelType) async {
-    final url = Uri.parse('$baseUrl/inference');
+    final url = Uri.parse('$baseUrl/food/analyze');
     var request = http.MultipartRequest('POST', url);
 
     request.fields['modelType'] = modelType;
@@ -32,7 +32,7 @@ class FeedingAIService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['message'];
+      return "${data['label']} (${data['confidence']})\n${data['description']}";
     } else {
       return "Error: ${response.body}";
     }

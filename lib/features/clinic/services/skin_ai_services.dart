@@ -8,7 +8,7 @@ class SkinAIService {
   final String baseUrl = "${ApiConstants.baseUrl}/ai";
 
   Future<String> sendImage(File imageFile, String modelType) async {
-    final url = Uri.parse('$baseUrl/inference');
+    final url = Uri.parse('$baseUrl/skin/analyze');
     var request = http.MultipartRequest('POST', url);
     request.fields['modelType'] = modelType;
 
@@ -28,12 +28,7 @@ class SkinAIService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
-      if (data['predictions'] != null && data['predictions'].isNotEmpty) {
-        return data['predictions'][0]['label'] ?? "Inference done";
-      }
-
-      return data['message'] ?? "Inference done";
+      return "${data['label']} (${data['confidence']})\n${data['description']}";
     } else {
       return "Error: ${response.body}";
     }

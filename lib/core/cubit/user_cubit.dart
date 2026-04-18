@@ -9,10 +9,10 @@ import 'user_state.dart';
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserInitial());
 
-  final TextEditingController signInEmail = TextEditingController();
+  final TextEditingController signInUsername = TextEditingController();
   final TextEditingController signInPassword = TextEditingController();
 
-  final TextEditingController signUpEmail = TextEditingController();
+  final TextEditingController signUpUsername = TextEditingController();
   final TextEditingController signUpPhoneNumber = TextEditingController();
   final TextEditingController signUpPassword = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
@@ -22,7 +22,7 @@ class UserCubit extends Cubit<UserState> {
 
   /// LOGIN
   Future<void> login() async {
-    if (signInEmail.text.isEmpty || signInPassword.text.isEmpty) {
+    if (signInUsername.text.isEmpty || signInPassword.text.isEmpty) {
       emit(UserLoginError("Please fill all fields"));
       return;
     }
@@ -31,7 +31,7 @@ class UserCubit extends Cubit<UserState> {
       emit(UserLoading());
 
       final result = await LoginService.login(
-        email: signInEmail.text.trim(),
+        username: signInUsername.text.trim(),
         password: signInPassword.text.trim(),
       );
 
@@ -53,7 +53,7 @@ class UserCubit extends Cubit<UserState> {
       emit(UserLoading());
 
       final result = await SignupService.signup(
-        email: signUpEmail.text.trim(),
+        username: signUpUsername.text.trim(),
         phone: signUpPhoneNumber.text.trim(),
         password: signUpPassword.text.trim(),
         confirmPassword: confirmPassword.text.trim(),
@@ -137,9 +137,9 @@ class UserCubit extends Cubit<UserState> {
 
   @override
   Future<void> close() {
-    signInEmail.dispose();
+    signInUsername.dispose();
     signInPassword.dispose();
-    signUpEmail.dispose();
+    signUpUsername.dispose();
     signUpPhoneNumber.dispose();
     signUpPassword.dispose();
     confirmPassword.dispose();

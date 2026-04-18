@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ournest/features/Exercises.dart';
 import '../../features/clinic/views/father/father_clinic_screen.dart';
 import '../../features/home/baby_home_screen/views/baby_home_screen.dart';
+import '../../features/home/baby_home_screen/widgets/activities_screen.dart';
 import '../../features/lists/views/mother&father/list_screen.dart';
-import '../../features/settings/father/views/father_settings.dart';
+import '../../features/settings/mother/views/mather_settings.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_Icons.dart';
 import 'custom_svg.dart';
@@ -22,8 +22,8 @@ class _ButtomNavigationBarBabyState extends State<ButtomNavigationBarBaby> {
     Babyhomescreen(),
     ListScreen(),
     ClinicScreenfather(),
-    BabyExercises(),
-    SettingsScreenfather(),
+    ActivitiesScreen(),
+    SettingsScreen(),
   ];
   Color _iconColor(int index) {
     return currentIndex == index ? AppColors.Pinky : Colors.grey;

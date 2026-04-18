@@ -194,7 +194,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                             /// POSTS FROM API
                             ...posts.map((post) {
                               return _postCard(post: post);
-                            }).toList(),
+                            }),
 
                             const SizedBox(height: 80),
                           ],
@@ -225,7 +225,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(9),
         border: Border.all(color: AppColors.Pinky.withValues(alpha: 0.3)),
         color: Colors.white,
       ),

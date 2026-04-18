@@ -135,4 +135,19 @@ class CommunityService {
       throw Exception(jsonDecode(response.body)["message"] ?? "Error");
     }
   }
+  static Future<void> deletePost(String postId) async {
+    final token = await TokenStorage.getToken();
+
+    final response = await http.delete(
+      Uri.parse("${ApiConstants.baseUrl}/community/posts/$postId"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
+    }
+  }
 }

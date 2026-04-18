@@ -7,7 +7,7 @@ class SignupService {
     required String phone,
     required String password,
     required String confirmPassword,
-    required String email,
+    required String username,
 
 
   }) async {
@@ -17,7 +17,7 @@ class SignupService {
       url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "username": email,
+        "username": username,
         "password": password,
         "phoneNumber": phone,
       }),

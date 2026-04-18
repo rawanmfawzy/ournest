@@ -6,17 +6,24 @@ class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: "http://10.0.2.2:5038/api",
+      contentType: "application/json",
     ),
   );
 
   static void init() {
+    dio.interceptors.clear();
+
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await TokenStorage.getToken();
 
+          print("TOKEN = $token");
+
           if (token != null) {
             options.headers["Authorization"] = "Bearer $token";
+          } else {
+            print("❌ NO TOKEN FOUND");
           }
 
           return handler.next(options);
@@ -33,18 +40,17 @@ class DioClient {
                 return handler.next(error);
               }
 
-              final newToken = await LoginService.refreshToken(
-                token,
-                refresh,
-              );
+              final newToken =
+              await LoginService.refreshToken(token, refresh);
 
-              await TokenStorage.saveToken(newToken["token"]);
+              final accessToken = newToken["token"];
+
+              await TokenStorage.saveToken(accessToken);
 
               error.requestOptions.headers["Authorization"] =
-              "Bearer ${newToken["token"]}";
+              "Bearer $accessToken";
 
               final response = await dio.fetch(error.requestOptions);
-
               return handler.resolve(response);
             } catch (e) {
               await TokenStorage.clear();
@@ -56,5 +62,12 @@ class DioClient {
         },
       ),
     );
+  }
+  static Future<void> setToken() async {
+    final token = await TokenStorage.getToken();
+
+    if (token != null) {
+      dio.options.headers["Authorization"] = "Bearer $token";
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
 
 import '../../../settings/mother/views/mather_settings.dart';
+import '../../cubit/clinic_cubit.dart';
 import '../../widgets/Medicines_tap.dart';
 import '../../widgets/clinic_tap.dart';
 import '../../widgets/feeding_tap.dart';
@@ -31,13 +33,18 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
   }
 
   @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+    return BlocProvider(
+      create: (_) => ClinicCubit(),
       child: Scaffold(
         backgroundColor: Colors.white,
+
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -65,7 +72,6 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
 
-                      /// PROFILE IMAGE
                       Container(
                         width: 40,
                         height: 40,
@@ -78,7 +84,6 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                         ),
                       ),
 
-                      /// TITLE
                       Row(
                         children: [
                           Text(
@@ -97,7 +102,6 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                         ],
                       ),
 
-                      /// SETTINGS
                       IconButton(
                         onPressed: () {
                           Navigator.push(
@@ -145,17 +149,9 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                   child: TabBarView(
                     controller: tabController,
                     children: const [
-
-                      /// FILE 1
                       ClinicTab(),
-
-                      /// FILE 2
                       FeedingTab(),
-
-                      /// FILE 3
                       MedicinesTap(),
-
-                      /// FILE 4
                       SkinTab(),
                     ],
                   ),

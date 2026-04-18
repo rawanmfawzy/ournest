@@ -5,6 +5,7 @@ import '../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/utils/app_Styles.dart';
 import '../cubit/clinic_cubit.dart';
+import '../services/clinic_state.dart';
 
 class ClinicTab extends StatefulWidget {
   const ClinicTab({super.key});
@@ -15,7 +16,19 @@ class ClinicTab extends StatefulWidget {
 
 class _ClinicTabState extends State<ClinicTab> {
   final TextEditingController controller = TextEditingController();
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+  @override
+  void initState() {
+    super.initState();
 
+    Future.microtask(() {
+      context.read<ClinicCubit>().initConversation();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ClinicCubit, ClinicState>(
@@ -64,9 +77,12 @@ class _ClinicTabState extends State<ClinicTab> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: state.isSending
+                            ? null
+                            : () {
                           final text = controller.text.trim();
                           if (text.isEmpty) return;
+
                           controller.clear();
                           context.read<ClinicCubit>().sendMessage(text);
                         },

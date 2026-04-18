@@ -42,9 +42,10 @@ class SettingsScreen extends StatelessWidget {
                   Color(0xFFFFC5D0),
                 ],
               ),
-            ), child:Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
+            ), child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: SingleChildScrollView(
+            child: Column(
             children: [
               SizedBox(height: 65.h),
 
@@ -244,6 +245,7 @@ class SettingsScreen extends StatelessWidget {
       ),
         ),
         ),
+            ),
     );
   }
 }

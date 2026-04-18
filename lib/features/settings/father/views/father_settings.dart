@@ -44,7 +44,8 @@ class SettingsScreenfather extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               children: [
                 SizedBox(height: 65.h),
 
@@ -236,6 +237,7 @@ class SettingsScreenfather extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

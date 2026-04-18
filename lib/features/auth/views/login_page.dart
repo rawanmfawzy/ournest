@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ournest/features/auth/views/signup_page.dart';
 import '../../../core/cubit/user_cubit.dart';
 import '../../../core/cubit/user_state.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -81,8 +80,8 @@ class _LoginPageState extends State<LoginPage> {
 
                 /// USERNAME
                 CustomTextField(
-                  label: "User Name / email",
-                  controller: cubit.signInEmail,
+                  label: "User Name",
+                  controller: cubit.signInUsername,
                   width: double.infinity,
                   height: 48.h,
                   suffix1: const Icon(

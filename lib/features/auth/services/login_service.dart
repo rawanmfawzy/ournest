@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../core/cubit/token_storage_helper.dart';
 import '../../../core/utils/api_constants.dart';
 
 class LoginService {
 
   static Future<Map<String, dynamic>> login({
-    required String email,
+    required String username,
     required String password,
   }) async {
     final url = Uri.parse("${ApiConstants.baseUrl}/auth/login");
@@ -14,7 +15,7 @@ class LoginService {
       url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "username": email,
+        "username": username,
         "password": password,
       }),
     );
@@ -22,12 +23,16 @@ class LoginService {
     final data = jsonDecode(response.body);
 
     if (response.statusCode == 200 && data["success"] == true) {
+
+      await TokenStorage.saveToken(data["token"]);
+      await TokenStorage.saveRefreshToken(data["refreshToken"]);
+      await TokenStorage.saveUserId(data["user"]["id"]);
+
       return data;
     }
 
     throw Exception(data["error"] ?? "Login failed");
   }
-
   static Future<Map<String, dynamic>> loginWithGoogle() async {
     final url = Uri.parse("${ApiConstants.baseUrl}/auth/google");
 

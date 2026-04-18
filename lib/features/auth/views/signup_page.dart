@@ -9,8 +9,6 @@ import '../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_text_field.dart';
-import '../../onboarding/User_Doctor_Selection_Page.dart';
-import '../../onboarding/welcome_services_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -68,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 // USER NAME
                 CustomTextField(
                   label: "User Email",
-                  controller: cubit.signUpEmail,
+                  controller: cubit.signUpUsername,
                   suffix1: const Icon(Icons.person_outline, color: Color(0xFFB34962)),
                 ),
                 SizedBox(height: 18.h),
@@ -123,21 +121,28 @@ class _SignUpPageState extends State<SignUpPage> {
                       text: "Sign Up",
                       width: double.infinity,
                       onPressed: () {
-                        final email = cubit.signUpEmail.text.trim();
+                        final username = cubit.signUpUsername.text.trim();
                         final phone = cubit.signUpPhoneNumber.text.trim();
                         final password = cubit.signUpPassword.text.trim();
                         final confirmPassword = cubit.confirmPassword.text.trim();
 
                         // EMAIL VALIDATION
-                        if (email.isEmpty) {
+                        if (username.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please enter email")),
+                            const SnackBar(content: Text("Please enter username")),
+                          );
+                          return;
+                        }
+
+                        if (username.length < 3) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Username must be at least 3 characters")),
                           );
                           return;
                         }
 
                         // BASIC FIELDS VALIDATION
-                        if (email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                        if (username.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Please fill all fields")),
                           );

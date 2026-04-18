@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ournest/features/auth/views/signup_page.dart';
 import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
-import '../../core/widgets/buttom_navigation_bar_mother.dart';
 import '../../core/widgets/custom_buttom.dart';
 import '../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

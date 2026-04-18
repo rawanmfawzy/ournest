@@ -12,7 +12,14 @@ class CommentsCubit extends Cubit<CommunityState> {
     try {
       emit(CommunityLoading());
 
-      comments = await CommunityService.getComments(postId);
+      final data = await CommunityService.getComments(postId);
+
+      comments = data.map((c) {
+        return {
+          ...c,
+          "createdAt": DateTime.now().toIso8601String(),
+        };
+      }).toList();
 
       emit(CommentsSuccess(List.from(comments)));
     } catch (e) {
@@ -30,18 +37,29 @@ class CommentsCubit extends Cubit<CommunityState> {
   }
 
   Future<void> getReplies(String commentId) async {
-    final data = await CommunityService.getReplies(commentId);
-    replies[commentId] = data;
+    try {
+      final data = await CommunityService.getReplies(commentId);
 
-    emit(CommentsSuccess(List.from(comments)));
+      replies[commentId] = data.map((r) {
+        return {
+          ...r,
+          "createdAt": r["createdAt"] ?? DateTime.now().toIso8601String(),
+        };
+      }).toList();
+
+      emit(CommentsSuccess(List.from(comments)));
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
   }
 
   Future<void> addReply(String commentId, String content) async {
-    await CommunityService.addReply(commentId, content);
-    await getReplies(commentId);
-  }
+    try {
+      await CommunityService.addReply(commentId, content);
 
-  void refresh() {
-    emit(CommentsSuccess(List.from(comments)));
+      await getReplies(commentId);
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
   }
 }

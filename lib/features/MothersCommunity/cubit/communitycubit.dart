@@ -57,4 +57,12 @@ class CommunityCubit extends Cubit<CommunityState> {
       emit(CommunityError(e.toString()));
     }
   }
+  Future<void> deletePost(String postId) async {
+    try {
+      await CommunityService.deletePost(postId);
+      await getPosts();
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
 }

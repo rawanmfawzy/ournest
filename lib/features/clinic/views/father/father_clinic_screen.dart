@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
 
 import '../../../settings/mother/views/mather_settings.dart';
+import '../../cubit/clinic_cubit.dart';
 import '../../widgets/clinic_tap.dart';
 import '../../widgets/skin_tap.dart';
 
@@ -140,14 +142,12 @@ class _ClinicScreenfatherState extends State<ClinicScreenfather>
                 Expanded(
                   child: TabBarView(
                     controller: tabController,
-                    children: const [
-
-                      /// FILE 1
-                      ClinicTab(),
-
-
-                      /// FILE 3
-                      SkinTab(),
+                    children: [
+                      BlocProvider(
+                        create: (_) => ClinicCubit(),
+                        child: const ClinicTab(),
+                      ),
+                      const SkinTab(),
                     ],
                   ),
                 ),
