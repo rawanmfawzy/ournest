@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../core/utils/app_Icons.dart';
-import '../../../core/widgets/custom_svg.dart';
-import '../../../core/utils/app_Styles.dart';
-import '../cubit/clinic_cubit.dart';
-import '../services/clinic_state.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/widgets/custom_svg.dart';
+import '../../../../core/utils/app_Styles.dart';
+import '../../cubit/clinic_cubit.dart';
+import '../../services/clinic/clinic_state.dart';
 
 class ClinicTab extends StatefulWidget {
   const ClinicTab({super.key});
@@ -26,7 +26,11 @@ class _ClinicTabState extends State<ClinicTab> {
     super.initState();
 
     Future.microtask(() {
-      context.read<ClinicCubit>().initConversation();
+      final cubit = context.read<ClinicCubit>();
+
+      if (cubit.state.messages.isEmpty) {
+        cubit.initConversation();
+      }
     });
   }
   @override

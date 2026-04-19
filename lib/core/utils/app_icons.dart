@@ -64,6 +64,10 @@ abstract class AppIcons {
   static const String Ellipse ='${_iconPath}ellipse.svg';
   static const String Ellipse1 ='${_iconPath}ellipse1.svg';
   static const String Exercises ='${_iconPath}exercises.svg';
+  static const String new_chat ='${_iconPath}new_chat.svg';
+  static const String chat_history ='${_iconPath}chat_history.svg';
+
+
 
 
 

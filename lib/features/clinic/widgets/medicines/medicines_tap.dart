@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/app_Icons.dart';
-import '../../../core/utils/app_Styles.dart';
-import '../../../core/widgets/custom_svg.dart';
-import '../cubit/skin_cubit.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Styles.dart';
+import '../../../../core/widgets/custom_svg.dart';
+import '../../cubit/skin_cubit.dart';
 
-class SkinTab extends StatefulWidget {
-  const SkinTab({super.key});
+class MedicinesTap extends StatefulWidget {
+  const MedicinesTap({super.key});
 
   @override
-  State<SkinTab> createState() => _SkinTabState();
+  State<MedicinesTap> createState() => _MedicinesTapState();
 }
 
-class _SkinTabState extends State<SkinTab> {
+class _MedicinesTapState extends State<MedicinesTap> {
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -90,7 +90,7 @@ class _SkinTabState extends State<SkinTab> {
       imageQuality: 80,
     );
 
-    if (!mounted) return; // 👈 حماية من crash
+    if (!mounted) return; // 👈 أهم سطر ضد crash
 
     if (image != null) {
       context.read<SkinCubit>().addImage(File(image.path));

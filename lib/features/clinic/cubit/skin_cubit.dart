@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../models/message_model.dart';
-import '../services/skin_ai_services.dart';
+import '../services/skin/skin_ai_services.dart';
 
 class SkinState extends Equatable {
   final List<Message> messages;

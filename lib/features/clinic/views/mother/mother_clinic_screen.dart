@@ -10,9 +10,10 @@ import '../../../../core/widgets/custom_svg.dart';
 import '../../../settings/mother/views/mather_settings.dart';
 import '../../cubit/clinic_cubit.dart';
 import '../../widgets/Medicines_tap.dart';
-import '../../widgets/clinic_tap.dart';
-import '../../widgets/feeding_tap.dart';
-import '../../widgets/skin_tap.dart';
+import '../../widgets/clinic/clinic_drawer.dart';
+import '../../widgets/clinic/clinic_tap.dart';
+import '../../widgets/feeding/feeding_tap.dart';
+import '../../widgets/skin/skin_tap.dart';
 
 class ClinicScreenmother extends StatefulWidget {
   const ClinicScreenmother({super.key});
@@ -43,6 +44,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
     return BlocProvider(
       create: (_) => ClinicCubit(),
       child: Scaffold(
+        drawer: const ClinicDrawer(),
         backgroundColor: Colors.white,
 
         body: Container(
@@ -102,21 +104,20 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                         ],
                       ),
 
-                      IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SettingsScreen(),
-                            ),
-                          );
-                        },
-                        icon: CustomSvg(
-                          path: AppIcons.settings,
-                          width: 24.w,
-                          height: 24.h,
-                          color: AppColors.Pinky,
-                        ),
+                      Row(
+                        children: [
+                          /// زرار الشاتات 🔥
+                          Builder(
+                            builder: (context) {
+                              return IconButton(
+                                icon:  Icon(Icons.menu, color: AppColors.Pinky),
+                                onPressed: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),

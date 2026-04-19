@@ -9,8 +9,8 @@ import '../../../../core/widgets/custom_svg.dart';
 
 import '../../../settings/mother/views/mather_settings.dart';
 import '../../cubit/clinic_cubit.dart';
-import '../../widgets/clinic_tap.dart';
-import '../../widgets/skin_tap.dart';
+import '../../widgets/clinic/clinic_tap.dart';
+import '../../widgets/skin/skin_tap.dart';
 
 class ClinicScreenfather extends StatefulWidget {
   const ClinicScreenfather({super.key});

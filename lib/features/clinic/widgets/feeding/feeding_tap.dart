@@ -4,29 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/app_Icons.dart';
-import '../../../core/utils/app_Styles.dart';
-import '../../../core/widgets/custom_svg.dart';
-import '../cubit/skin_cubit.dart';
-
-class MedicinesTap extends StatefulWidget {
-  const MedicinesTap({super.key});
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Styles.dart';
+import '../../../../core/widgets/custom_svg.dart';
+import '../../cubit/feeding_cubit.dart';
+/// --- UI Feeding Tab ---
+class FeedingTab extends StatefulWidget {
+  const FeedingTab({super.key});
 
   @override
-  State<MedicinesTap> createState() => _MedicinesTapState();
+  State<FeedingTab> createState() => _FeedingTabState();
 }
 
-class _MedicinesTapState extends State<MedicinesTap> {
+class _FeedingTabState extends State<FeedingTab> {
   final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SkinCubit, SkinState>(
+    return BlocBuilder<FeedingCubit, FeedingState>(
       builder: (context, state) {
         return Column(
           children: [
-            // قائمة الصور
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.all(10),
@@ -41,7 +40,6 @@ class _MedicinesTapState extends State<MedicinesTap> {
               ),
             ),
 
-            // زر Attach
             Padding(
               padding: EdgeInsets.all(10),
               child: GestureDetector(
@@ -83,21 +81,21 @@ class _MedicinesTapState extends State<MedicinesTap> {
     );
   }
 
-  // دالة اختيار الصورة من الجهاز
+  /// اختيار صورة وتحديد modelType
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
 
-    if (!mounted) return; // 👈 أهم سطر ضد crash
+    if (!mounted) return;
 
     if (image != null) {
-      context.read<SkinCubit>().addImage(File(image.path));
+      String modelType = "food";
+      context.read<FeedingCubit>().addImage(File(image.path), modelType);
     }
   }
 
-  // Bubble للصورة
   Widget imageBubble(File imageFile) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -110,12 +108,7 @@ class _MedicinesTapState extends State<MedicinesTap> {
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: Colors.grey.shade400),
             ),
-            child: Image.file(
-              imageFile,
-              width: 150.w,
-              height: 150.h,
-              fit: BoxFit.cover,
-            ),
+            child: Image.file(imageFile, width: 150.w, height: 150.h, fit: BoxFit.cover),
           ),
         ),
       ],

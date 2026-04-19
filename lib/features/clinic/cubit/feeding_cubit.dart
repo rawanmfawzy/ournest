@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/message_model.dart';
-import '../services/feeding_ai_services.dart';
+import '../services/feeding/feeding_ai_services.dart';
 
 /// --- Cubit & State ---
 class FeedingState extends Equatable {

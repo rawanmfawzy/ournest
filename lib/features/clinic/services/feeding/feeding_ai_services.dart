@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
 
-import '../../../core/utils/api_constants.dart';
+import '../../../../core/utils/api_constants.dart';
 
 class FeedingAIService {
   final String baseUrl = "${ApiConstants.baseUrl}/ai";

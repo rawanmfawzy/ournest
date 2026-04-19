@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/message_model.dart';
+import '../../models/message_model.dart';
 
 class ClinicState extends Equatable {
   final List<Message> messages;
