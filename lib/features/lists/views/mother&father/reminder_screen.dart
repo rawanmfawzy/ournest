@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
@@ -6,7 +7,8 @@ import '../../../../core/widgets/custom_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../settings/mother/views/mather_settings.dart';
-
+import '../../services/reminder/remindercubit.dart';
+import '../../services/reminder/remindermodel.dart';
 
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key});
@@ -18,7 +20,11 @@ class ReminderScreen extends StatefulWidget {
 class _ReminderScreenState extends State<ReminderScreen> {
   final TextEditingController reminderController = TextEditingController();
 
-  List<Map<String, String>> reminders = []; // text + date
+  @override
+  void initState() {
+    super.initState();
+    context.read<ReminderCubit>().loadReminders();
+  }
 
   Future<void> selectDate(BuildContext context, String text) async {
     DateTime now = DateTime.now();
@@ -29,21 +35,16 @@ class _ReminderScreenState extends State<ReminderScreen> {
     );
 
     if (pickedDate != null) {
-      setState(() {
-        reminders.add({
-          "text": text,
-          "date": "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}",
-        });
-      });
+      await context
+          .read<ReminderCubit>()
+          .addReminder(text, pickedDate);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         body: Container(
           width: double.infinity,
@@ -64,6 +65,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
+
+                  /// HEADER
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -83,7 +86,6 @@ class _ReminderScreenState extends State<ReminderScreen> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black,
                         ),
                       ),
                       IconButton(
@@ -104,16 +106,20 @@ class _ReminderScreenState extends State<ReminderScreen> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 30),
+
                   const Text(
                     "Remember me",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
                     ),
                   ),
+
                   const SizedBox(height: 15),
+
+                  /// INPUT
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
@@ -134,7 +140,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
                         ),
                         InkWell(
                           onTap: () {
-                            String text = reminderController.text.trim();
+                            String text =
+                            reminderController.text.trim();
                             if (text.isEmpty) return;
 
                             selectDate(context, text);
@@ -150,65 +157,98 @@ class _ReminderScreenState extends State<ReminderScreen> {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 20),
+
+                  /// LIST
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 40),
-                      itemCount: reminders.length,
-                      itemBuilder: (context, index) {
-                        final item = reminders[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.pink.shade200),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                    child: BlocBuilder<ReminderCubit,
+                        List<ReminderModel>>(
+                      builder: (context, reminders) {
+                        if (reminders.isEmpty) {
+                          return const Center(
+                            child: Text("No reminders yet"),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding:
+                          const EdgeInsets.only(bottom: 40),
+                          itemCount: reminders.length,
+                          itemBuilder: (context, index) {
+                            final item = reminders[index];
+
+                            return Container(
+                              margin:
+                              const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: AppColors.Pinky),
+                              ),
+                              child: Row(
                                 children: [
+
+                                  /// TITLE
                                   Expanded(
                                     child: Text(
-                                      item["text"]!,
-                                      style: const TextStyle(
+                                      item.title,
+                                      style: TextStyle(
                                         fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
+                                        fontWeight:
+                                        FontWeight.w600,
+                                        decoration:
+                                        item.isCompleted
+                                            ? TextDecoration
+                                            .lineThrough
+                                            : null,
                                       ),
                                     ),
                                   ),
+
+                                  /// DATE
                                   Text(
-                                    item["date"]!,
+                                    "${item.reminderDateTime.day}-${item.reminderDateTime.month}",
                                     style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black54,
-                                    ),
+                                        fontSize: 13),
                                   ),
-                                  const SizedBox(width: 8),
-                                  InkWell(
-                                    onTap: () =>
-                                        setState(() => reminders.removeAt(index)),
-                                    child: const Icon(Icons.delete,
-                                        size: 20, color: Color(0xFFB34962)),
+                                  /// COMPLETE
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.green,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<
+                                          ReminderCubit>()
+                                          .completeReminder(
+                                          item.id);
+                                    },
+                                  ),
+
+                                  /// DELETE
+                                  IconButton(
+                                    icon:  Icon(
+                                      Icons.delete,
+                                      color:
+                                      AppColors.Pinky,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<
+                                          ReminderCubit>()
+                                          .deleteReminder(
+                                          item.id);
+                                    },
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                "• Remember me",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFFB34962),
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -229,12 +269,13 @@ class _DatePickerPopup extends StatefulWidget {
   const _DatePickerPopup({required this.initial});
 
   @override
-  State<_DatePickerPopup> createState() => _DatePickerPopupState();
+  State<_DatePickerPopup> createState() =>
+      _DatePickerPopupState();
 }
 
 class _DatePickerPopupState extends State<_DatePickerPopup> {
   late DateTime selectedDate;
-
+  final now = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -244,56 +285,50 @@ class _DatePickerPopupState extends State<_DatePickerPopup> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      shape:
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Container(
         padding: const EdgeInsets.all(20),
-        width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+             Text(
               "Select a reminder date.",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Colors.black,
+                color: AppColors.Pinky
               ),
             ),
-            const SizedBox(height: 15),
             SizedBox(
-              height: 200,
-              child: CalendarDatePicker(
-                initialDate: selectedDate,
-                firstDate: DateTime(2020),
-                lastDate: DateTime(2035),
-                onDateChanged: (date) {
-                  setState(() => selectedDate = date);
-                },
+              height: 280,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: AppColors.Pinky, // لون اليوم المختار
+                    onPrimary: Colors.white,   // لون رقم اليوم المختار
+                    onSurface: Colors.black,   // باقي الأرقام
+                  ),
+                ),
+                child: CalendarDatePicker(
+                  initialDate: selectedDate.isBefore(now) ? now : selectedDate,
+                  firstDate: now,
+                  lastDate: DateTime(2030),
+                  onDateChanged: (date) {
+                    if (date.isBefore(now)) return;
+                    setState(() => selectedDate = date);
+                  },
+                ),
               ),
             ),
-            const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context, selectedDate);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB34962),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                backgroundColor: AppColors.Pinky,
               ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                child: Text(
-                  "Select Date",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              child:  Text("Select Date",style: TextStyle(color: Colors.white),),
             )
           ],
         ),

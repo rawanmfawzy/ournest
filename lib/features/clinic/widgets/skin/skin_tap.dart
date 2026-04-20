@@ -9,6 +9,7 @@ import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Styles.dart';
 import '../../../../core/widgets/custom_svg.dart';
 import '../../cubit/skin_cubit.dart';
+import '../../services/skin/skinstate.dart';
 
 class SkinTab extends StatefulWidget {
   const SkinTab({super.key});
@@ -26,22 +27,58 @@ class _SkinTabState extends State<SkinTab> {
       builder: (context, state) {
         return Column(
           children: [
-            // قائمة الصور
+            /// ================= CHAT LIST =================
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.all(10),
-                itemCount: state.messages.length,
+                itemCount: state.isSending
+                    ? state.messages.length + 1
+                    : state.messages.length,
                 itemBuilder: (context, index) {
+                  if (index == state.messages.length && state.isSending) {
+                    return const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
                   final msg = state.messages[index];
+
                   if (msg.image != null) return imageBubble(msg.image!);
-                  if (msg.text != null) return bubble(text: msg.text!, isUser: msg.isUser); // هنا
-                  return SizedBox.shrink();
+
+                  if (msg.text != null) {
+                    return bubble(text: msg.text!, isUser: msg.isUser);
+                  }
+
+                  return const SizedBox.shrink();
                 },
                 separatorBuilder: (_, __) => SizedBox(height: 10.h),
               ),
-            ),
 
-            // زر Attach
+            ),
+            if (state.error != null)
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  state.error!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+
+            /// ================= LOADING =================
+            if (state.isSending)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+
+            /// ================= ATTACH BUTTON =================
             Padding(
               padding: EdgeInsets.all(10),
               child: GestureDetector(
@@ -51,9 +88,12 @@ class _SkinTabState extends State<SkinTab> {
                   radius: Radius.circular(12.r),
                   color: AppColors.Pinky,
                   strokeWidth: 1.5,
-                  dashPattern: [6, 4],
+                  dashPattern: const [6, 4],
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 13.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 19.w,
+                      vertical: 13.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12.r),
@@ -61,7 +101,11 @@ class _SkinTabState extends State<SkinTab> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CustomSvg(path: AppIcons.attechment, width: 28.w, height: 28.h),
+                        CustomSvg(
+                          path: AppIcons.attechment,
+                          width: 28.w,
+                          height: 28.h,
+                        ),
                         SizedBox(width: 6.w),
                         Text(
                           "Attach",
@@ -83,21 +127,21 @@ class _SkinTabState extends State<SkinTab> {
     );
   }
 
-  // دالة اختيار الصورة من الجهاز
+  /// ================= PICK IMAGE =================
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
 
-    if (!mounted) return; // 👈 حماية من crash
+    if (!mounted) return;
 
     if (image != null) {
-      context.read<SkinCubit>().addImage(File(image.path));
+      context.read<SkinCubit>().sendImage(File(image.path));
     }
   }
 
-  // Bubble للصورة
+  /// ================= IMAGE BUBBLE =================
   Widget imageBubble(File imageFile) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -121,36 +165,37 @@ class _SkinTabState extends State<SkinTab> {
       ],
     );
   }
-}
 
-Widget bubble({required String text, required bool isUser}) {
-  return Row(
-    mainAxisAlignment: isUser ? MainAxisAlignment.start : MainAxisAlignment.end,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Flexible(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 265.w),
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-          decoration: BoxDecoration(
-            color: isUser ? Colors.white : Color(0x0FB34962),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8.r),
-              topRight: Radius.circular(8.r),
-              bottomLeft: Radius.circular(isUser ? 0 : 8.r),
-              bottomRight: Radius.circular(isUser ? 8.r : 0),
+  /// ================= TEXT BUBBLE =================
+  Widget bubble({required String text, required bool isUser}) {
+    return Row(
+      mainAxisAlignment: isUser ? MainAxisAlignment.start : MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 265.w),
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            decoration: BoxDecoration(
+              color: isUser ? Colors.white : Color(0x0FB34962),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8.r),
+                topRight: Radius.circular(8.r),
+                bottomLeft: Radius.circular(isUser ? 0 : 8.r),
+                bottomRight: Radius.circular(isUser ? 8.r : 0),
+              ),
+              border: Border.all(color: Colors.grey.shade400),
             ),
-            border: Border.all(color: Colors.grey.shade400),
-          ),
-          child: Text(
-            text,
-            style: AppStyles.textStyle20w700AY.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w400),
+            child: Text(
+              text,
+              style: AppStyles.textStyle20w700AY.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w400),
+            ),
           ),
         ),
-      ),
-      SizedBox(width: 5.w),
-      if (!isUser)
-        CustomSvg(path: AppIcons.chatbot, width: 28.w, height: 28.h),
-    ],
-  );
+        SizedBox(width: 5.w),
+        if (!isUser)
+          CustomSvg(path: AppIcons.chatbot, width: 28.w, height: 28.h),
+      ],
+    );
+  }
 }

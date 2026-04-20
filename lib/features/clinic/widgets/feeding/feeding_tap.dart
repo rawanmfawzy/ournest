@@ -39,6 +39,14 @@ class _FeedingTabState extends State<FeedingTab> {
                 separatorBuilder: (_, __) => SizedBox(height: 10.h),
               ),
             ),
+            if (state.isSending)
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
 
             Padding(
               padding: EdgeInsets.all(10),

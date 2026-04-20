@@ -30,6 +30,7 @@ class FeedingCubit extends Cubit<FeedingState> {
   void addImage(File imageFile, String modelType) async {
     final updatedMessages = List<Message>.from(state.messages)
       ..add(Message(image: imageFile, isUser: true));
+
     emit(state.copyWith(messages: updatedMessages, isSending: true));
 
     try {
@@ -40,7 +41,19 @@ class FeedingCubit extends Cubit<FeedingState> {
 
       emit(state.copyWith(messages: newMessages, isSending: false));
     } catch (e) {
-      emit(state.copyWith(isSending: false));
+      // ❗ هنا المهم: نعرض نفس رسالة الباكند
+      final errorMessage = Message(
+        text: e.toString(), // أو message لو هتطلعيه من service
+        isUser: false,
+      );
+
+      final newMessages = List<Message>.from(updatedMessages)
+        ..add(errorMessage);
+
+      emit(state.copyWith(
+        messages: newMessages,
+        isSending: false,
+      ));
     }
   }
 }

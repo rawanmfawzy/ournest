@@ -1,42 +1,50 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import '../models/message_model.dart';
 import '../services/skin/skin_ai_services.dart';
-
-class SkinState extends Equatable {
-  final List<Message> messages;
-  final bool isSending;
-
-  const SkinState({this.messages = const [], this.isSending = false});
-
-  SkinState copyWith({List<Message>? messages, bool? isSending}) {
-    return SkinState(
-      messages: messages ?? this.messages,
-      isSending: isSending ?? this.isSending,
-    );
-  }
-
-  @override
-  List<Object> get props => [messages, isSending];
-}
+import '../services/skin/skinstate.dart';
 class SkinCubit extends Cubit<SkinState> {
-  final SkinAIService _aiService = SkinAIService();
+  final SkinAIService _service;
 
-  SkinCubit() : super(const SkinState());
+  SkinCubit(this._service) : super(const SkinState());
 
-  void addImage(File imageFile) async {
-    final updatedMessages = List<Message>.from(state.messages)
-      ..add(Message(image: imageFile, isUser: true));
-    emit(state.copyWith(messages: updatedMessages, isSending: true));
+  Future<void> sendImage(File image) async {
+    final userMessage = Message(
+      image: image,
+      isUser: true,
+    );
+
+    emit(state.copyWith(
+      messages: [...state.messages, userMessage],
+      isSending: true,
+      error: null,
+    ));
 
     try {
-      final botResponse = await _aiService.sendImage(imageFile, "skin");
-      final newMessages = List<Message>.from(updatedMessages)
-        ..add(Message(text: botResponse, isUser: false));
-      emit(state.copyWith(messages: newMessages, isSending: false));
+      final result = await _service.analyzeImage(image);
+
+      final label = result['label'] ?? "Unknown";
+      final confidence = (result['confidence'] ?? 0).toStringAsFixed(2);
+      final description = result['description'] ?? "No description available";
+
+      final botMessage = Message(
+        text: "$label\nConfidence: $confidence\n\n$description",
+        isUser: false,
+      );
+
+      emit(state.copyWith(
+        messages: [...state.messages, botMessage],
+        isSending: false,
+      ));
     } catch (e) {
-      emit(state.copyWith(isSending: false));
+      emit(state.copyWith(
+        isSending: false,
+        error: e.toString(),
+      ));
     }
+  }
+
+  void clearChat() {
+    emit(const SkinState());
   }
 }

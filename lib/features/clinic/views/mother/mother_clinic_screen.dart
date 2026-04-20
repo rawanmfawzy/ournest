@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ournest/features/clinic/services/skin/skin_ai_services.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
 import '../../../../core/widgets/custom_svg.dart';
 
-import '../../../settings/mother/views/mather_settings.dart';
 import '../../cubit/clinic_cubit.dart';
-import '../../widgets/Medicines_tap.dart';
+import '../../cubit/feeding_cubit.dart';
+import '../../cubit/skin_cubit.dart';
+
 import '../../widgets/clinic/clinic_drawer.dart';
 import '../../widgets/clinic/clinic_tap.dart';
 import '../../widgets/feeding/feeding_tap.dart';
@@ -26,6 +28,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
     with SingleTickerProviderStateMixin {
 
   late TabController tabController;
+  int currentTabIndex = 0;
 
   @override
   void initState() {
@@ -41,10 +44,20 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ClinicCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ClinicCubit()),
+
+        BlocProvider(
+          create: (_) => FeedingCubit(),
+        ),
+
+        BlocProvider(
+          create: (_) => SkinCubit(SkinAIService()),
+        ),
+      ],
       child: Scaffold(
-        drawer: const ClinicDrawer(),
+        drawer: ClinicDrawer(tabIndex: currentTabIndex),
         backgroundColor: Colors.white,
 
         body: Container(
@@ -106,11 +119,10 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
 
                       Row(
                         children: [
-                          /// زرار الشاتات 🔥
                           Builder(
                             builder: (context) {
                               return IconButton(
-                                icon:  Icon(Icons.menu, color: AppColors.Pinky),
+                                icon: Icon(Icons.menu, color: AppColors.Pinky),
                                 onPressed: () {
                                   Scaffold.of(context).openDrawer();
                                 },
@@ -128,6 +140,11 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                 /// TAB BAR
                 TabBar(
                   controller: tabController,
+                  onTap: (index) {
+                    setState(() {
+                      currentTabIndex = index;
+                    });
+                  },
                   indicatorColor: const Color(0xFFB34962),
                   labelColor: const Color(0xFFB34962),
                   unselectedLabelColor: Colors.grey,
@@ -152,7 +169,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                     children: const [
                       ClinicTab(),
                       FeedingTab(),
-                      MedicinesTap(),
+                      FeedingTab(),
                       SkinTab(),
                     ],
                   ),
