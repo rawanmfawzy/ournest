@@ -17,9 +17,10 @@ class CommentsCubit extends Cubit<CommunityState> {
       comments = data.map((c) {
         return {
           ...c,
-          "createdAt": c["createdAt"],
+          "createdAt": DateTime.parse(c["createdAt"]), // تعديل هنا
         };
       }).toList();
+
 
       emit(CommentsSuccess(List.from(comments)));
     } catch (e) {
@@ -43,9 +44,10 @@ class CommentsCubit extends Cubit<CommunityState> {
       replies[commentId] = data.map((r) {
         return {
           ...r,
-          "createdAt": r["createdAt"],
+          "createdAt": DateTime.parse(r["createdAt"]), // تعديل هنا
         };
       }).toList();
+
 
       emit(CommentsSuccess(List.from(comments)));
     } catch (e) {

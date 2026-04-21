@@ -30,75 +30,147 @@ class _AddPostSheetState extends State<AddPostSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
         top: 20,
-        left: 20,
-        right: 20,
+        left: 16,
+        right: 16,
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
 
-          TextField(
-            controller: contentController,
-            style:  TextStyle(
-              color: AppColors.Pinky,
+          /// Title
+          const Text(
+            "Create Post",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            decoration: const InputDecoration(
-              hintText: "Write your post...",
-              hintStyle: TextStyle(
-                color: Colors.grey,
-              ),
-              filled: true,
-              fillColor: Color(0xFFF5F5F5),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            maxLines: 3,
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
 
+          /// Text Field
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6F6F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextField(
+              controller: contentController,
+              maxLines: 4,
+              style: TextStyle(color: AppColors.Pinky),
+              decoration: const InputDecoration(
+                hintText: "What's on your mind?",
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          /// Image Preview
           if (imageFile != null)
-            Image.file(imageFile!, height: 100),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    imageFile!,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        imageFile = null;
+                      });
+                    },
+                    child: const CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.black54,
+                      child: Icon(Icons.close, size: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
+          /// Actions
           Row(
             children: [
-              IconButton(
-                onPressed: pickImage,
-                icon:  Icon(Icons.image,color: AppColors.Pinky,),
+
+              /// Add Image Button (أحلى من icon لوحده)
+              GestureDetector(
+                onTap: pickImage,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.Pinky),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.image, color: AppColors.Pinky),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Photo",
+                        style: TextStyle(color: AppColors.Pinky),
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const Spacer(),
 
-              CustomButton(
-                text: "Post",
-                onPressed: () {
-                  context.read<CommunityCubit>().createPost(
-                    content: contentController.text,
-                    category: "Baby Care",
-                    imageUrl: null, // هنضيف رفع بعدين لو عندك API
-                  );
-                  Navigator.pop(context);
-                },
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+              /// Post Button
+              SizedBox(
+                width: 120,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.Pinky,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+    onPressed: () {
+    context.read<CommunityCubit>().createPost(
+    content: contentController.text,
+    category: "Baby Care",
+      imageUrl: null,
+    );
+
+    Navigator.pop(context);
+    },
+                  child: const Text(
+                    "Post",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-                width: 100,
-                height: 40,
-                backgroundColor: const Color(0xFFB34962),
-                borderRadius: 6,
               ),
             ],
           ),
+
+          const SizedBox(height: 10),
         ],
       ),
     );

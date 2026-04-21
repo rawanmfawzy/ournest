@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../../../core/utils/api_constants.dart';
 import '../../../core/cubit/token_storage_helper.dart';
@@ -25,8 +26,8 @@ class CommunityService {
 
   static Future<Map<String, dynamic>> createPost({
     required String content,
-    String? imageUrl,
     required String category,
+    String? imageUrl,
   }) async {
     final token = await TokenStorage.getToken();
 
@@ -38,15 +39,15 @@ class CommunityService {
       },
       body: jsonEncode({
         "content": content,
-        "imageUrl": imageUrl,
         "category": category,
+        "imageUrl": imageUrl, // هنبعته URL مش File
       }),
     );
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception(jsonDecode(response.body)["message"] ?? "Error");
+      throw Exception(response.body);
     }
   }
 

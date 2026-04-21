@@ -279,16 +279,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
           Row(
             children: [
 
-              GestureDetector(
-                onTap: () {
-                  context.read<CommunityCubit>().likePost(id);
-                },
-                child: CustomSvg(
+
+                 CustomSvg(
                   path: AppIcons.icons_favorite,
                   width: 18,
                   height: 18,
                 ),
-              ),
+
 
               const SizedBox(width: 4),
               Text("$likesCount"),

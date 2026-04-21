@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ournest/core/utils/app_colors.dart';
-import 'package:ournest/core/utils/time_ago.dart';
 import '../../../core/utils/app_Icons.dart';
+import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_svg.dart';
-import '../../../core/widgets/custom_text_field.dart';
 import '../../settings/mother/views/mather_settings.dart';
 import '../cubit/commentscubit.dart';
 import '../cubit/communitystate.dart';
 import '../../../../core/utils/app_Images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ournest/features/MothersCommunity/services/time_ago_extension.dart';
 
 class PostCommentsScreen extends StatelessWidget {
   final Map post;
@@ -122,23 +122,19 @@ class _PostCommentsBodyState extends State<_PostCommentsBody> {
                     ],
                   ),
                 ),
-
-                /// SEARCH
+                const SizedBox(height: 45),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: CustomTextField(
-                    label: "",
-                    height: 40.h,
-                    suffix1: const Icon(Icons.search),
-                    suffix2: const Icon(Icons.tune),
-                    hintWidget: Text(
-                      "Search for a post or person",
-                      style: TextStyle(fontSize: 14.sp),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Feed:",
+                      style: AppStyles.textStyle14w400hints,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+
 
                 /// POST
                 _postCard(widget.post),
@@ -165,12 +161,11 @@ class _PostCommentsBodyState extends State<_PostCommentsBody> {
                           itemCount: comments.length,
                           itemBuilder: (context, index) {
                             final comment = comments[index];
+                            final createdAt = comment["createdAt"] as DateTime;
                             final commentId = comment["id"].toString();
                             final replies = cubit.replies[commentId];
                             final isShown = showReplies[commentId] ?? false;
-                            final createdAt = DateTime.parse(
-                              comment["createdAt"].toString(),
-                            ).toLocal();
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -429,7 +424,7 @@ class _PostCommentsBodyState extends State<_PostCommentsBody> {
                       .read<CommentsCubit>()
                       .addReply(id, controller.text);
 
-                  await context.read<CommentsCubit>().getReplies(id);
+                  await context.read<CommentsCubit>().addReply(id, controller.text);
                   replyingToCommentId = null;
                 } else {
                   await context

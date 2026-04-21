@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/communityservice.dart';
 import 'communitystate.dart';
@@ -27,14 +28,14 @@ class CommunityCubit extends Cubit<CommunityState> {
 
   Future<void> createPost({
     required String content,
-    String? imageUrl,
     required String category,
+    String? imageUrl,
   }) async {
     try {
       await CommunityService.createPost(
         content: content,
-        imageUrl: imageUrl,
         category: category,
+        imageUrl: imageUrl,
       );
 
       await getPosts();
