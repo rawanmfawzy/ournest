@@ -12,6 +12,7 @@ class CustomTextField extends StatefulWidget {
   final double? height;
   final double fontSize;
   final bool obscureText;
+  final Function(String)? onChanged;
 
   const CustomTextField({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextField extends StatefulWidget {
     this.height,
     this.fontSize = 14,
     this.obscureText = false,
+    this.onChanged,
   });
 
   @override
@@ -89,6 +91,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     TextField(
                       controller: _internalController,
                       obscureText: widget.obscureText,
+                      onChanged: widget.onChanged,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                       ),

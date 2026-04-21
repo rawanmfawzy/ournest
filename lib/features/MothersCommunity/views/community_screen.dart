@@ -106,12 +106,15 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     suffix1: const Icon(Icons.search, color: Colors.black45),
                     suffix2: const Icon(Icons.tune, color: Colors.black45),
                     hintWidget: Text(
-                      "Search for a post or person",
+                      "Search for a post",
                       style: TextStyle(
                         color: Colors.black45,
                         fontSize: 14.sp,
                       ),
                     ),
+                    onChanged: (value) {
+                      context.read<CommunityCubit>().searchPosts(value);
+                    },
                   ),
                 ),
 

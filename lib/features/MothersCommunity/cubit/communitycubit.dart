@@ -6,6 +6,9 @@ class CommunityCubit extends Cubit<CommunityState> {
   CommunityCubit() : super(CommunityInitial());
 
   List posts = [];
+  List allPosts = [];
+  List filteredPosts = [];
+  String searchQuery = "";
 
   Future<void> getPosts() async {
     try {
@@ -13,7 +16,10 @@ class CommunityCubit extends Cubit<CommunityState> {
 
       posts = await CommunityService.getPosts();
 
-      emit(PostsSuccess(posts));
+      allPosts = List.from(posts);
+      filteredPosts = List.from(posts);
+
+      emit(PostsSuccess(filteredPosts));
     } catch (e) {
       emit(CommunityError(e.toString()));
     }
@@ -64,5 +70,24 @@ class CommunityCubit extends Cubit<CommunityState> {
     } catch (e) {
       emit(CommunityError(e.toString()));
     }
+  }
+  void searchPosts(String query) {
+    searchQuery = query;
+
+    if (query.isEmpty) {
+      filteredPosts = List.from(allPosts);
+    } else {
+      filteredPosts = allPosts.where((post) {
+        final content = (post["content"] ?? "").toString().toLowerCase();
+        final author = (post["authorName"] ?? "").toString().toLowerCase();
+        final category = (post["category"] ?? "").toString().toLowerCase();
+
+        return content.contains(query.toLowerCase()) ||
+            author.contains(query.toLowerCase()) ||
+            category.contains(query.toLowerCase());
+      }).toList();
+    }
+
+    emit(PostsSuccess(List.from(filteredPosts)));
   }
 }

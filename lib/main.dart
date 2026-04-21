@@ -12,11 +12,13 @@ import 'features/MothersCommunity/cubit/communitycubit.dart';
 import 'features/clinic/cubit/clinic_cubit.dart';
 import 'features/clinic/cubit/feeding_cubit.dart';
 import 'features/clinic/cubit/skin_cubit.dart';
+import 'features/home/baby_home_screen/widgets/feeding_screen.dart';
 import 'features/lists/services/reminder/remindercubit.dart';
 import 'features/lists/services/reminder/reminderservice.dart';
 import 'features/lists/services/to_do_list/to_do_list_services.dart';
 import 'features/lists/services/to_do_list/todocubit.dart';
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   DioClient.init();
   runApp(const MyApp());
 }

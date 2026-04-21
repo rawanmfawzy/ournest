@@ -168,7 +168,9 @@ class _PostCommentsBodyState extends State<_PostCommentsBody> {
                             final commentId = comment["id"].toString();
                             final replies = cubit.replies[commentId];
                             final isShown = showReplies[commentId] ?? false;
-                            final createdAt = DateTime.tryParse(comment["createdAt"] ?? "");
+                            final createdAt = DateTime.parse(
+                              comment["createdAt"].toString(),
+                            ).toLocal();
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -271,7 +273,9 @@ class _PostCommentsBodyState extends State<_PostCommentsBody> {
                                             if (isShown && replies != null)
                                               Column(
                                                 children: replies.map<Widget>((reply) {
-                                                  final replyTime = DateTime.tryParse(reply["createdAt"] ?? "");
+                                                  final replyTime = DateTime.parse(
+                                                    reply["createdAt"].toString(),
+                                                  ).toLocal();
                                                   return Padding(
                                                     padding: const EdgeInsets.only(
                                                         left: 24, top: 8),

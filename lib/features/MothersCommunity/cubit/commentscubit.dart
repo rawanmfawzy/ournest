@@ -17,7 +17,7 @@ class CommentsCubit extends Cubit<CommunityState> {
       comments = data.map((c) {
         return {
           ...c,
-          "createdAt": DateTime.now().toIso8601String(),
+          "createdAt": c["createdAt"],
         };
       }).toList();
 
@@ -43,7 +43,7 @@ class CommentsCubit extends Cubit<CommunityState> {
       replies[commentId] = data.map((r) {
         return {
           ...r,
-          "createdAt": r["createdAt"] ?? DateTime.now().toIso8601String(),
+          "createdAt": r["createdAt"],
         };
       }).toList();
 

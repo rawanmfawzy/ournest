@@ -77,26 +77,26 @@ class _AddPostSheetState extends State<AddPostSheet> {
 
               const Spacer(),
 
-    CustomButton(
-    text: "Post",
-    onPressed: () {
-    context.read<CommunityCubit>().createPost(
-    content: contentController.text,
-    category: "Baby Care",
-    imageUrl: null, // هنضيف رفع بعدين لو عندك API
-    );
-    Navigator.pop(context);
-    },
-    textStyle: TextStyle(
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-    ),
-    width: 100,
-    height: 40,
-    backgroundColor: const Color(0xFFB34962),
-    borderRadius: 6,
-    ),
+              CustomButton(
+                text: "Post",
+                onPressed: () {
+                  context.read<CommunityCubit>().createPost(
+                    content: contentController.text,
+                    category: "Baby Care",
+                    imageUrl: null, // هنضيف رفع بعدين لو عندك API
+                  );
+                  Navigator.pop(context);
+                },
+                textStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+                width: 100,
+                height: 40,
+                backgroundColor: const Color(0xFFB34962),
+                borderRadius: 6,
+              ),
             ],
           ),
         ],

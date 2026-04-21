@@ -16,7 +16,7 @@ class Periodtracking extends StatefulWidget {
 }
 
 class _PeriodtrackingState extends State<Periodtracking> {
-  double progress = 0.75; // نسبة الدورة (0 → 1)
+  double progress = 0.75; 
 
   @override
   Widget build(BuildContext context) {

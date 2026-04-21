@@ -211,7 +211,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
                                   /// DATE
                                   Text(
-                                    "${item.reminderDateTime.day}-${item.reminderDateTime.month}",
+                                    "${item.reminderDateTime.day}-${item.reminderDateTime.month}-${item.reminderDateTime.year}",
                                     style: const TextStyle(
                                         fontSize: 13),
                                   ),
