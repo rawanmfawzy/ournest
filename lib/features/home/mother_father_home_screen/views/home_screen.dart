@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_icons.dart';
 import '../../../../core/utils/app_images.dart';
-import '../../../../core/utils/app_styles.dart';
 import '../../../../core/widgets/custom_svg.dart';
+import '../../../onboarding/services/onboarding_data.dart';
+import '../../../settings/father/views/father_settings.dart';
 import '../../../settings/mother/views/mather_settings.dart';
+import '../../services/tips/tipmodel.dart';
+import '../../services/tips/tips_cubit.dart';
+import '../../services/tips/tips_state.dart';
 
-class MotherHomeScreen extends StatefulWidget {
-  const MotherHomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MotherHomeScreen> createState() => _MotherHomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MotherHomeScreenState extends State<MotherHomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
+
   final List<Map<String, dynamic>> circles = [
     {'top': 170.h, 'left': 18.w, 'text': "6"},
     {'top': 170.h, 'right': 10.w, 'text': "12"},
@@ -30,22 +37,31 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
   final int totalWeeks = 40;
   final String trimester = "1st trimester";
 
-  late double progress = (currentWeeks + currentDays / 7) / totalWeeks;
+  late double progress =
+      (currentWeeks + currentDays / 7) / totalWeeks;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final week = OnboardingData.gestationalWeeks;
+      context.read<TipsCubit>().loadTips(week);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFE6EA),
       body: SingleChildScrollView(
         child: SizedBox(
           height: 950.h,
           child: Stack(
             children: [
 
-              /// الخلفية
+              /// BACKGROUND
               Container(
-                width: double.infinity,
-                height: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -55,47 +71,43 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                 ),
               ),
 
-              /// svg
-              Positioned(
-                top: 1.h,
-                left: 0,
-                child: CustomSvg(
-                  path: AppIcons.Ellipse1,
-                  width: 200.w,
-                  height: 315.h,
-                ),
-              ),
-
-              /// header
+              /// HEADER
               SafeArea(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                       CircleAvatar(
                         radius: 20.r,
-                        backgroundImage: AssetImage(Appimages.person_image),
+                        backgroundImage:
+                        AssetImage(Appimages.person_image),
                       ),
+
                       CustomSvg(
                         path: AppIcons.settings,
                         width: 24.w,
                         height: 24.h,
                         color: AppColors.Pinky,
-                        onTap:() {
+                        onTap: () {
+                          final screen =
+                          OnboardingData.role == "father"
+                              ? SettingsScreenfather()
+                              : SettingsScreen();
+
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => SettingsScreen()),
+                            MaterialPageRoute(builder: (_) => screen),
                           );
                         },
-
                       ),
                     ],
                   ),
                 ),
               ),
 
-              /// صورة الطفل
+              /// BABY IMAGE
               Positioned(
                 top: 98.h,
                 left: 70.w,
@@ -106,35 +118,33 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                 ),
               ),
 
-              /// الدواير
+              /// CIRCLES
               ...circles.map((circle) {
                 bool isCurrent = circle['isCurrent'] ?? false;
 
                 return Positioned(
                   top: circle['top'],
-                  left: circle.containsKey('left') ? circle['left'] : null,
-                  right: circle.containsKey('right') ? circle['right'] : null,
+                  left: circle['left'],
+                  right: circle['right'],
                   child: Column(
                     children: [
                       SolidCircle(
                         size: 44,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFFC5D0), Color(0xFF56DADA)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFFFC5D0),
+                            Color(0xFF56DADA)
+                          ],
                         ),
                         text: circle['text'],
                         isCurrent: isCurrent,
-                        textStyle: AppStyles.textStyle20w700AY.copyWith(
-                          color: Colors.white,
-                        ),
                       ),
                       if (isCurrent)
                         Text(
                           "Current week",
-                          style: AppStyles.textStyle14w400hints.copyWith(
-                            fontSize: 12,
+                          style: TextStyle(
                             color: AppColors.Pinky,
+                            fontSize: 12.sp,
                           ),
                         ),
                     ],
@@ -142,7 +152,7 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                 );
               }),
 
-              /// كارد التقدم
+              /// PROGRESS CARD (UNCHANGED UI)
               Positioned(
                 top: 325.h,
                 left: 10.w,
@@ -153,7 +163,7 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                      color: Color(0xFFFFC5D0),
+                      color: const Color(0xFFFFC5D0),
                       width: 2,
                     ),
                   ),
@@ -162,19 +172,22 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                     children: [
 
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "$currentWeeks weeks and $currentDays days",
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14.sp),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.sp,
+                            ),
                           ),
                           Text(
                             trimester,
                             style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12.sp),
+                              color: Colors.grey[600],
+                              fontSize: 12.sp,
+                            ),
                           ),
                         ],
                       ),
@@ -183,26 +196,31 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
 
                       Stack(
                         children: [
+
                           Container(
                             height: 8.h,
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10.r),
+                              borderRadius:
+                              BorderRadius.circular(10.r),
                             ),
                           ),
+
                           Container(
                             height: 8.h,
-                            width: MediaQuery.of(context).size.width *
-                                progress -
-                                20.w,
+                            width:
+                            (MediaQuery.of(context).size.width *
+                                progress)
+                                .clamp(0.0, double.infinity),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                              gradient: const LinearGradient(
                                 colors: [
                                   Color(0xFFFFC5D0),
-                                  Color(0xFF56DADA)
+                                  Color(0xFF56DADA),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(10.r),
+                              borderRadius:
+                              BorderRadius.circular(10.r),
                             ),
                           ),
                         ],
@@ -217,14 +235,16 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                           Text(
                             "Date of labor 27 Jun 2026",
                             style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12.sp),
+                              color: Colors.grey[600],
+                              fontSize: 12.sp,
+                            ),
                           ),
                           Text(
                             "${totalWeeks - currentWeeks} weeks left",
                             style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12.sp),
+                              color: Colors.grey[600],
+                              fontSize: 12.sp,
+                            ),
                           ),
                         ],
                       ),
@@ -233,30 +253,80 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
                 ),
               ),
 
-              /// الكونتينر
+              /// SYMPTOMS (FIXED ONLY LOGIC)
               Positioned(
                 top: 415.h,
                 left: 10.w,
                 right: 10.w,
-                child: SymptomsContainer(
-                  icon: AppIcons.pregnant_woman,
-                  title: "Expected symptoms in the 9 week",
-                  symptoms: [
-                    "Nausea and Vomiting (Morning Sickness): This may be at its worst stage now and can occur at any time of the day.",
-                    "Severe Fatigue and Exhaustion: Due to high progesterone levels and the body's effort in building the placenta.",
-                  ],
+                child:BlocBuilder<TipsCubit, TipsState>(
+                  builder: (context, state) {
+
+                    if (state is TipsLoading) {
+                      return const SizedBox(
+                        height: 80,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    if (state is TipsLoaded) {
+                      final symptoms = state.tips
+                          .where((t) => t.category.toLowerCase().contains("symptom"))
+                          .toList();
+
+                      if (symptoms.isEmpty) {
+                        return const SizedBox(
+                          height: 50,
+                          child: Center(child: Text("No symptoms today")),
+                        );
+                      }
+
+                      return SymptomsContainer(
+                        icon: AppIcons.pregnant_woman,
+                        title: "Symptoms",
+                        symptoms: symptoms.map((e) => e.content).toList(),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
                 ),
               ),
+
+              /// FOOD (FIXED ONLY LOGIC)
               Positioned(
                 top: 585.h,
                 left: 10.w,
                 right: 10.w,
-                child: SymptomsContainer(
-                  icon: AppIcons.red_apple,
-                  title: "Beneficial Food for You and Your Baby\n at 9 Weeks Pregnant",
-                  symptoms: [
-                    "Folic Acid: Importance: Crucial for the development   of the fetal nervous system and preventing birth defects in the brain and spinal cord. It is often prescribed by the",
-                  ],
+                child:BlocBuilder<TipsCubit, TipsState>(
+                  builder: (context, state) {
+
+                    if (state is TipsLoading) {
+                      return const SizedBox(
+                        height: 80,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    if (state is TipsLoaded) {
+
+                      final food = state.tips
+                          .where((t) => t.category.toLowerCase().contains("food"))
+                          .toList();
+                      if (food.isEmpty) {
+                        return const SizedBox(
+                          height: 50,
+                          child: Center(child: Text("No food tips today")),
+                        );
+                      }
+                      return SymptomsContainer(
+                        icon: AppIcons.red_apple,
+                        title: "Food",
+                        symptoms: food.map((e) => e.content).toList(),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
                 ),
               ),
             ],
@@ -266,7 +336,6 @@ class _MotherHomeScreenState extends State<MotherHomeScreen> {
     );
   }
 }
-
 class SymptomsContainer extends StatelessWidget {
   final String icon;
   final String title;

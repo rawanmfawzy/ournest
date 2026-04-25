@@ -6,7 +6,7 @@ import '../../../../core/utils/app_Icons.dart';
 import '../../../../core/utils/app_Images.dart';
 import '../../../../core/utils/app_Styles.dart';
 import '../../../../core/widgets/custom_svg.dart';
-import '../../../pass/views/forget_password_page.dart';
+import '../views/baby_care_detail_page.dart';
 
 class Babyhomescreen extends StatefulWidget {
   const Babyhomescreen({super.key});
@@ -216,7 +216,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const ForgetPasswordPage(),
+                      builder: (_) => const BabyCareDetailPage(
+                        type: 'feeding',
+                        title: 'Feeding Time',
+                      ),
                     ),
                   );
                 },),
@@ -225,7 +228,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ForgetPasswordPage(),
+                        builder: (_) => const BabyCareDetailPage(
+                          type: 'vitamins',
+                          title: 'Baby Naps & Sleep',
+                        ),
                       ),
                     );
                   },),
@@ -234,7 +240,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ForgetPasswordPage(),
+                        builder: (_) => const BabyCareDetailPage(
+                          type: 'vitamins',
+                          title: 'Baby Care Tips',
+                        ),
                       ),
                     );
                   },),
@@ -243,7 +252,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ForgetPasswordPage(),
+                        builder: (_) => const BabyCareDetailPage(
+                          type: 'vitamins',
+                          title: "Baby's Health",
+                        ),
                       ),
                     );
                   },),
@@ -252,7 +264,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ForgetPasswordPage(),
+                        builder: (_) => const BabyCareDetailPage(
+                          type: 'feeding',
+                          title: "Baby's Feeding",
+                        ),
                       ),
                     );
                   },),
@@ -261,7 +276,10 @@ class _BabyhomescreenState extends State<Babyhomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ForgetPasswordPage(),
+                        builder: (_) => const BabyCareDetailPage(
+                          type: 'vaccinations',
+                          title: "Vaccination Schedule",
+                        ),
                       ),
                     );
                   },),

@@ -39,4 +39,17 @@ class ReminderService {
   Future<void> completeReminder(String id) async {
     await dio.patch('/reminders/$id/complete');
   }
+  Future<ReminderModel> shareReminder({
+    required String id,
+    required bool sharedWithPartner,
+  }) async {
+    final res = await dio.patch(
+      '/reminders/$id/share',
+      data: {
+        "sharedWithPartner": sharedWithPartner,
+      },
+    );
+
+    return ReminderModel.fromJson(res.data);
+  }
 }

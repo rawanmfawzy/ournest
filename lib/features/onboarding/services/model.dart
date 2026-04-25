@@ -1,5 +1,4 @@
 class OnboardingRequest {
-  final bool isDoctor;
   final String role;
   final bool isPregnant;
   final double height;
@@ -13,7 +12,6 @@ class OnboardingRequest {
   final String dateOfBirth;
 
   OnboardingRequest({
-    required this.isDoctor,
     required this.role,
     required this.isPregnant,
     required this.height,
@@ -29,7 +27,6 @@ class OnboardingRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      "isDoctor": isDoctor,
       "role": role,
       "isPregnant": isPregnant,
       "height": height,

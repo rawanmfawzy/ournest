@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/pass_cubit.dart';
+import '../cubit/pass_state.dart';
+import '../../../../core/utils/app_colors.dart';
 import 'Create_New_Password_Page.dart';
 
 
@@ -29,8 +32,23 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
         toolbarHeight: 58,
       ),
 
-      body: SingleChildScrollView(
-        padding:  EdgeInsets.symmetric(horizontal: 25.h, vertical: 20.w),
+      body: BlocConsumer<PassCubit, PassState>(
+        listener: (context, state) {
+          if (state is VerifyOtpSuccess) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateNewPasswordPage()),
+            );
+          } else if (state is VerifyOtpFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          } else if (state is ForgotPasswordSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        builder: (context, state) {
+          final cubit = context.read<PassCubit>();
+          return SingleChildScrollView(
+            padding:  EdgeInsets.symmetric(horizontal: 25.h, vertical: 20.w),
 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,14 +72,14 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
                   children: [
                     TextSpan(
                       text:
-                      "Please enter the code we just sent to Phone Number\n",
+                      "Please enter the code we just sent to Email\n",
                       style: TextStyle(
                         color: Colors.black87,
                         fontSize: 13.sp,
                       ),
                     ),
                     TextSpan(
-                      text: "example +01 23 56 78 917",
+                      text: cubit.recoveryEmail.isNotEmpty ? cubit.recoveryEmail : "your recovery email",
                       style: TextStyle(
                         color: Color(0xFF2BA24C), // green color
                         fontSize: 13.sp,
@@ -130,7 +148,9 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
                 ),
                  SizedBox(height: 5.h),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    cubit.forgotPassword(cubit.email, cubit.recoveryEmail);
+                  },
                   child:  Text(
                     "Resend code",
                     style: TextStyle(
@@ -145,14 +165,17 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
 
              SizedBox(height: 56.h),
 
-            CustomButton(
+            state is PassLoading
+                ? CircularProgressIndicator(color: AppColors.Pinky)
+                : CustomButton(
               text: "Verify",
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const CreateNewPasswordPage()),
-                );
+                final otp = controllers.map((c) => c.text).join();
+                if (otp.length == 4) {
+                  cubit.verifyOtp(otp);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter 4-digit code")));
+                }
               },
               textStyle:  TextStyle(
                 color: Colors.white,
@@ -168,6 +191,8 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
              SizedBox(height: 40.h),
           ],
         ),
+      );
+        },
       ),
     );
   }

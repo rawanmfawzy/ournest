@@ -92,8 +92,46 @@ class _TodoListScreenState extends State<TodoListScreen> {
               ),
             ),
 
-            const SizedBox(height: 55),
-
+            const SizedBox(height: 45),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {
+                    // انتي هتحطي ال logic هنا بعدين
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.Pinky.withOpacity(0.01),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.Pinky),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 18,
+                          color: AppColors.Pinky,
+                        ),
+                        SizedBox(width: 6.w),
+                        Text(
+                          "Show all",
+                          style: TextStyle(
+                            color: AppColors.Pinky,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             /// TITLE
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -165,15 +203,30 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                 : null,
                           ),
                         ),
-                        trailing: todo.isCompleted
-                            ? IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                            color: AppColors.Pinky,
-                          ),
-                          onPressed: () => cubit.delete(todo.id),
-                        )
-                            : null,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+
+                            /// ✅ SHARE CHECKBOX
+                            Checkbox(
+                              value: todo.sharedWithPartner ?? false,
+                              activeColor: AppColors.Pinky,
+                              onChanged: (val) {
+                                context.read<TodoCubit>().share(todo.id, val!);
+                              },
+                            ),
+
+                            /// 🗑 DELETE (بس لما يخلص التاسك)
+                            if (todo.isCompleted)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: AppColors.Pinky,
+                                ),
+                                onPressed: () => cubit.delete(todo.id),
+                              ),
+                          ],
+                        ),
                       );
                     },
                   );

@@ -32,6 +32,11 @@ class TodoCubit extends Cubit<TodoState> {
 
       final data = await service.getTodos();
 
+      data.sort((a, b) {
+        if (a.isCompleted == b.isCompleted) return 0;
+        return a.isCompleted ? 1 : -1;
+      });
+
       emit(state.copyWith(
         todos: data,
         loading: false,
@@ -50,15 +55,12 @@ class TodoCubit extends Cubit<TodoState> {
     try {
       emit(state.copyWith(loading: true));
 
-      final newTodo = await service.addTodo(title);
+      await service.addTodo(title);
 
-      emit(state.copyWith(
-        todos: [newTodo, ...state.todos],
-        loading: false,
-      ));
+      await loadTodos();
+
     } catch (e) {
       print("ERROR ADD TODO: $e");
-
       emit(state.copyWith(loading: false));
     }
   }
@@ -77,7 +79,6 @@ class TodoCubit extends Cubit<TodoState> {
       print("ERROR TOGGLE: $e");
     }
   }
-
   /// DELETE
   Future<void> delete(String id) async {
     try {
@@ -88,6 +89,42 @@ class TodoCubit extends Cubit<TodoState> {
       ));
     } catch (e) {
       print("ERROR DELETE: $e");
+    }
+  }
+  Future<void> update({
+    required String id,
+    String? title,
+    bool? isDone,
+    bool? shared,
+  }) async {
+    try {
+      final updated = await service.updateTodo(
+        id: id,
+        title: title,
+        isDone: isDone,
+        sharedWithPartner: shared,
+      );
+
+      final list = state.todos.map((e) {
+        return e.id == id ? updated : e;
+      }).toList();
+
+      emit(state.copyWith(todos: list));
+    } catch (e) {
+      print("ERROR UPDATE: $e");
+    }
+  }
+  Future<void> share(String id, bool value) async {
+    try {
+      final updated = await service.shareTodo(id, value);
+
+      final list = state.todos.map((e) {
+        return e.id == id ? updated : e;
+      }).toList();
+
+      emit(state.copyWith(todos: list));
+    } catch (e) {
+      print("ERROR SHARE: $e");
     }
   }
 }

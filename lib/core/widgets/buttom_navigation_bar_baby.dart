@@ -37,7 +37,7 @@ class _ButtomNavigationBarBabyState extends State<ButtomNavigationBarBaby> {
         children: screens,
       ),
       bottomNavigationBar: SizedBox(
-        height: 70,
+        height: 58,
         child:BottomNavigationBar(
           currentIndex: currentIndex,
           type: BottomNavigationBarType.fixed,

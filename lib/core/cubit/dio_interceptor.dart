@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'token_storage_helper.dart';
 import '../../features/auth/services/login_service.dart';
-
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
@@ -10,7 +9,12 @@ class DioClient {
     ),
   );
 
+  static bool _initialized = false;
+
   static void init() {
+    if (_initialized) return;
+    _initialized = true;
+
     dio.interceptors.clear();
 
     dio.interceptors.add(
@@ -18,19 +22,18 @@ class DioClient {
         onRequest: (options, handler) async {
           final token = await TokenStorage.getToken();
 
-          print("TOKEN = $token");
-
           if (token != null) {
             options.headers["Authorization"] = "Bearer $token";
-          } else {
-            print("❌ NO TOKEN FOUND");
           }
 
           return handler.next(options);
         },
 
         onError: (error, handler) async {
-          if (error.response?.statusCode == 401) {
+          final statusCode = error.response?.statusCode;
+
+          if (statusCode == 401 &&
+              error.requestOptions.extra["retry"] != true) {
             try {
               final token = await TokenStorage.getToken();
               final refresh = await TokenStorage.getRefreshToken();
@@ -43,14 +46,31 @@ class DioClient {
               final newToken =
               await LoginService.refreshToken(token, refresh);
 
-              final accessToken = newToken["token"];
+              final accessToken = newToken["token"]?.toString();
+
+              if (accessToken == null) {
+                await TokenStorage.clear();
+                return handler.next(error);
+              }
 
               await TokenStorage.saveToken(accessToken);
 
-              error.requestOptions.headers["Authorization"] =
-              "Bearer $accessToken";
+              final opts = error.requestOptions;
+              opts.headers["Authorization"] = "Bearer $accessToken";
+              opts.extra["retry"] = true;
 
-              final response = await dio.fetch(error.requestOptions);
+              final response = await dio.request(
+                opts.path,
+                data: opts.data,
+                queryParameters: opts.queryParameters,
+                options: Options(
+                  method: opts.method,
+                  headers: opts.headers,
+                  contentType: opts.contentType,
+                  responseType: opts.responseType,
+                ),
+              );
+
               return handler.resolve(response);
             } catch (e) {
               await TokenStorage.clear();

@@ -107,7 +107,47 @@ class _ReminderScreenState extends State<ReminderScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 25),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 0.w),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          // انتي هتحطي ال logic هنا بعدين
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.Pinky.withOpacity(0.01),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.Pinky),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline,
+                                size: 18,
+                                color: AppColors.Pinky,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                "Show all",
+                                style: TextStyle(
+                                  color: AppColors.Pinky,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
 
                   const Text(
                     "Remember me",
@@ -243,6 +283,22 @@ class _ReminderScreenState extends State<ReminderScreen> {
                                           ReminderCubit>()
                                           .deleteReminder(
                                           item.id);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      item.sharedWithPartner
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: item.sharedWithPartner
+                                          ? AppColors.Pinky
+                                          : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      context.read<ReminderCubit>().toggleShare(
+                                        item.id,
+                                        !item.sharedWithPartner,
+                                      );
                                     },
                                   ),
                                 ],

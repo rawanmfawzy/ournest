@@ -15,6 +15,7 @@ import '../../cubit/skin_cubit.dart';
 import '../../widgets/clinic/clinic_drawer.dart';
 import '../../widgets/clinic/clinic_tap.dart';
 import '../../widgets/feeding/feeding_tap.dart';
+import '../../widgets/medicines/medicines_tap.dart';
 import '../../widgets/skin/skin_tap.dart';
 
 class ClinicScreenmother extends StatefulWidget {
@@ -169,7 +170,7 @@ class _ClinicScreenmotherState extends State<ClinicScreenmother>
                     children: const [
                       ClinicTab(),
                       FeedingTab(),
-                      FeedingTab(),
+                      MedicinesTap(),
                       SkinTab(),
                     ],
                   ),

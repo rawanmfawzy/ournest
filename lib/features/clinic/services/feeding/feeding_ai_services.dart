@@ -1,43 +1,63 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'dart:convert';
-
-import '../../../../core/utils/api_constants.dart';
+import 'package:dio/dio.dart';
+import '../../../../core/cubit/dio_interceptor.dart';
 
 class FeedingAIService {
-  final String baseUrl = "${ApiConstants.baseUrl}/ai/food/analyze";
-
   Future<String> sendImage(File imageFile, String modelType) async {
-    final url = Uri.parse(baseUrl);
+    final formData = FormData.fromMap({
+      "modelType": modelType,
+      "image": await MultipartFile.fromFile(imageFile.path),
+    });
 
-    var request = http.MultipartRequest('POST', url);
-
-    request.fields['modelType'] = modelType;
-
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'image',
-        imageFile.path,
-      ),
+    final response = await DioClient.dio.post(
+      "/ai/food/analyze",
+      data: formData,
     );
+    final data = response.data;
 
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    final label = data['label'] ?? "Unknown";
 
-    print("STATUS = ${response.statusCode}");
-    print("BODY = ${response.body}");
+    final nutrition = data['nutrition'];
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return "${data['label']} (${data['confidence']})\n${data['description']}";
-    } else {
-      final data = jsonDecode(response.body);
+    String resultText = "🍽️ $label\n";
 
-      // 👇 نرجع نفس رسالة الباكند
-      throw Exception(data['message'] ?? response.body);
+    if (nutrition != null) {
+      final carb = nutrition['carb'] ??
+          nutrition['carbs'] ??
+          nutrition['carbohydrates'];
+
+      final protein = nutrition['protein'];
+
+      final fat = nutrition['fat'];
+
+      final calories = nutrition['calories'];
+
+      final sugar = nutrition['sugar'] ??
+          nutrition['suger'];
+
+      final nutrients = nutrition['nutrients'];
+
+      final feedback = nutrition['feedback'];
+
+      final pregnancyAdvice = nutrition['pregnancyAdvice'] ??
+          nutrition['pregnancyadvice'];
+
+      void addLine(String icon, String title, dynamic value) {
+        if (value != null && value.toString().trim().isNotEmpty) {
+          resultText += "\n$icon $title: $value";
+        }
+      }
+
+      addLine("", "Carbs", carb);
+      addLine("", "Protein", protein);
+      addLine("", "Fat", fat);
+      addLine("", "Calories", calories);
+      addLine("", "Sugar", sugar);
+      addLine("", "Nutrients", nutrients);
+      addLine("", "Feedback", feedback);
+      addLine("", "Pregnancy Advice", pregnancyAdvice);
     }
 
-    throw Exception(response.body);
+    return resultText;
   }
 }

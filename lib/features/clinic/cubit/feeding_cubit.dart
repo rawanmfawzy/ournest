@@ -43,7 +43,7 @@ class FeedingCubit extends Cubit<FeedingState> {
     } catch (e) {
       // ❗ هنا المهم: نعرض نفس رسالة الباكند
       final errorMessage = Message(
-        text: e.toString(), // أو message لو هتطلعيه من service
+        text: e.toString().replaceFirst("Exception: ", ""),
         isUser: false,
       );
 

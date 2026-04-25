@@ -7,6 +7,9 @@ import 'package:ournest/core/utils/app_Styles.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/pass_cubit.dart';
+import '../cubit/pass_state.dart';
 import 'verify_code_page.dart';
 
 class ForgetPasswordPage extends StatelessWidget {
@@ -14,7 +17,8 @@ class ForgetPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController phoneController = TextEditingController();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController recoveryEmailController = TextEditingController();
 
     return  GestureDetector(
         onTap: ()
@@ -48,16 +52,31 @@ class ForgetPasswordPage extends StatelessWidget {
         ),
       ),
 
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 25.h, vertical: 10.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+      body: BlocConsumer<PassCubit, PassState>(
+        listener: (context, state) {
+          if (state is ForgotPasswordSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const VerifyCodePage(),
+              ),
+            );
+          } else if (state is ForgotPasswordFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          }
+        },
+        builder: (context, state) {
+          return SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 25.h, vertical: 10.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
 
-                 SizedBox(height: 98.h),
+                 SizedBox(height: 80.h),
 
                 CustomSvg(
                   path: AppIcons.heart_lock_bold,
@@ -68,7 +87,7 @@ class ForgetPasswordPage extends StatelessWidget {
                  SizedBox(height: 22.h),
 
                  Text(
-                  "Please Enter Your Phone Number To\nReceive a Verification Code",
+                  "Please Enter Your Email To\nReceive a Verification Code",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFFB34962),
@@ -77,24 +96,40 @@ class ForgetPasswordPage extends StatelessWidget {
                   ),
                 ),
 
-                 SizedBox(height: 60.h),
+                 SizedBox(height: 90.h),
 
-                /// 🔹 Custom TextField
+                /// 🔹 Custom TextField for Registered Email
                 CustomTextField(
-                  label: "Enter Your Phone Number",
-                  controller: phoneController,
+                  label: "Enter Your Registered Email",
+                  controller: emailController,
                   width: double.infinity,
                   height: 55.h,
                   suffix1: const Icon(
-                    Icons.phone,
+                    Icons.email,
                     color: AppColors.Pinky,
                   ),
                 ),
 
-                 SizedBox(height: 80.h),
+                 SizedBox(height: 20.h),
+
+                /// 🔹 Custom TextField for Recovery Gmail
+                CustomTextField(
+                  label: "Enter Your Recovery Gmail",
+                  controller: recoveryEmailController,
+                  width: double.infinity,
+                  height: 55.h,
+                  suffix1: const Icon(
+                    Icons.email,
+                    color: AppColors.Pinky,
+                  ),
+                ),
+
+                 SizedBox(height: 40.h),
 
                 /// 🔹 Custom Button
-                CustomButton(
+                state is PassLoading
+                    ? CircularProgressIndicator(color: AppColors.Pinky)
+                    : CustomButton(
                   text: "Send",
                   width: double.infinity,
                   height: 50.h,
@@ -103,12 +138,13 @@ class ForgetPasswordPage extends StatelessWidget {
                     fontSize: 18.sp,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const VerifyCodePage(),
-                      ),
-                    );
+                    final email = emailController.text.trim();
+                    final recoveryEmail = recoveryEmailController.text.trim();
+                    if (email.isNotEmpty && recoveryEmail.isNotEmpty) {
+                      context.read<PassCubit>().forgotPassword(email, recoveryEmail);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter both emails")));
+                    }
                   },
                 ),
 
@@ -117,6 +153,8 @@ class ForgetPasswordPage extends StatelessWidget {
             ),
           ),
         ),
+      );
+      },
       ),
         ),
     );

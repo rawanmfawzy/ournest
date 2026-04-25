@@ -6,6 +6,10 @@ import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_svg.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/pass_cubit.dart';
+import '../cubit/pass_state.dart';
+import '../../../../core/utils/app_colors.dart';
 
 class CreateNewPasswordPage extends StatefulWidget {
   const CreateNewPasswordPage({super.key});
@@ -55,8 +59,22 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
         ),
       ),
 
-      body: SingleChildScrollView(
-        padding:  EdgeInsets.symmetric(horizontal: 17.h, vertical: 20.w),
+      body: BlocConsumer<PassCubit, PassState>(
+        listener: (context, state) {
+          if (state is ResetPasswordSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const PasswordChangedPage()),
+              (route) => false,
+            );
+          } else if (state is ResetPasswordFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          }
+        },
+        builder: (context, state) {
+          return SingleChildScrollView(
+            padding:  EdgeInsets.symmetric(horizontal: 17.h, vertical: 20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -122,14 +140,18 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
              SizedBox(height: 86.h),
 
             // Save Button
-            CustomButton(
+            state is PassLoading
+                ? CircularProgressIndicator(color: AppColors.Pinky)
+                : CustomButton(
               text: "Save",
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const PasswordChangedPage()),
-                );
+                final newPassword = newPasswordController.text;
+                final confirmPassword = confirmPasswordController.text;
+                if (newPassword.isNotEmpty && confirmPassword.isNotEmpty) {
+                  context.read<PassCubit>().resetPassword(newPassword, confirmPassword);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
+                }
               },
               textStyle:  TextStyle(
                 color: Colors.white,
@@ -145,6 +167,8 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
              SizedBox(height: 40.h),
           ],
         ),
+      );
+        },
       ),
         ),
     );

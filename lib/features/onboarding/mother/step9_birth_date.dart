@@ -11,6 +11,9 @@ import '../../splash/views/background.dart';
 import '../services/model.dart';
 import '../services/onboarding_data.dart';
 import '../services/services.dart';
+import '../services/father_service.dart';
+import '../../auth/services/login_service.dart';
+import '../../../core/cubit/token_storage_helper.dart';
 class Step9BirthDate extends StatefulWidget {
   const Step9BirthDate({super.key});
 
@@ -209,7 +212,6 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                     }
 
                     final onboarding = OnboardingRequest(
-                      isDoctor: OnboardingData.isDoctor,
                       role: OnboardingData.role,
                       isPregnant: OnboardingData.isPregnant,
                       height: OnboardingData.height,
@@ -224,6 +226,42 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                     );
 
                     await OnboardingService.submit(onboarding, token);
+
+                    // If role is Father, also create the Father profile record
+                    if (OnboardingData.role == "Father") {
+                      try {
+                        String activeToken = token;
+                        final refreshTokenStr = await TokenStorage.getRefreshToken();
+                        if (refreshTokenStr != null && refreshTokenStr.isNotEmpty) {
+                          try {
+                            final refreshData = await LoginService.refreshToken(token, refreshTokenStr);
+                            if (refreshData['token'] != null) {
+                              activeToken = refreshData['token'];
+                              await TokenStorage.saveToken(activeToken);
+                              if (refreshData['refreshToken'] != null) {
+                                await TokenStorage.saveRefreshToken(refreshData['refreshToken']);
+                              }
+                            }
+                          } catch (e) {
+                            print("Token refresh failed: $e");
+                          }
+                        }
+
+                        await FatherService.createProfile(
+                          token: activeToken,
+                          weight: OnboardingData.weight > 0
+                              ? OnboardingData.weight
+                              : null,
+                          height: OnboardingData.height > 0
+                              ? OnboardingData.height
+                              : null,
+                        );
+                      } catch (e) {
+                        print("Failed to create father profile: $e");
+                        // Non-fatal: profile may already exist or
+                        // will be created on next login
+                      }
+                    }
 
                     Navigator.pushAndRemoveUntil(
                       context,

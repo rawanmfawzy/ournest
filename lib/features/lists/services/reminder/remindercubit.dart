@@ -20,7 +20,7 @@ class ReminderCubit extends Cubit<List<ReminderModel>> {
     final newReminder =
     await service.createReminder(title: title, date: date);
 
-    final updated = [...state, newReminder];
+    final updated = List<ReminderModel>.from(state)..add(newReminder);
 
     updated.sort((a, b) =>
         b.reminderDateTime.compareTo(a.reminderDateTime));
@@ -43,7 +43,26 @@ class ReminderCubit extends Cubit<List<ReminderModel>> {
           description: e.description,
           reminderDateTime: e.reminderDateTime,
           isCompleted: true,
+          isSent: e.isSent,
+          recurrencePattern: e.recurrencePattern,
+          category: e.category,
+          sharedWithPartner: e.sharedWithPartner,
         );
+      }
+      return e;
+    }).toList();
+
+    emit(updated);
+  }
+  Future<void> toggleShare(String id, bool value) async {
+    final updatedReminder = await service.shareReminder(
+      id: id,
+      sharedWithPartner: value,
+    );
+
+    final updated = state.map((e) {
+      if (e.id == id) {
+        return updatedReminder;
       }
       return e;
     }).toList();

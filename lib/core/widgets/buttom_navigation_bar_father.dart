@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/clinic/views/father/father_clinic_screen.dart';
-import '../../features/doctor/doctor_screen.dart';
-import '../../features/home/father_home_screen/views/father_home_screen.dart';
+import '../../features/home/mother_father_home_screen/views/home_screen.dart';
 import '../../features/lists/views/mother&father/list_screen.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_Icons.dart';
@@ -19,10 +18,9 @@ class _ButtomNavigationBarFatherState extends State<ButtomNavigationBarFather> {
   int currentIndex = 0;
 
   final screens = [
-    FatherHomeScreen(),
+    HomeScreen(),
     ListScreen(),
     ClinicScreenfather(),
-    DoctorScreen(),
   ];
   Color _iconColor(int index) {
     return currentIndex == index ? AppColors.Pinky : Colors.grey;
@@ -36,7 +34,7 @@ class _ButtomNavigationBarFatherState extends State<ButtomNavigationBarFather> {
         children: screens,
       ),
         bottomNavigationBar: SizedBox(
-          height: 72,
+          height: 58,
           child:BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
@@ -59,10 +57,6 @@ class _ButtomNavigationBarFatherState extends State<ButtomNavigationBarFather> {
           BottomNavigationBarItem(
             icon: CustomSvg(path: AppIcons.clinic, width: 24, height: 24,color: _iconColor(2),),
             label: "Clinic",
-          ),
-          BottomNavigationBarItem(
-            icon: CustomSvg(path: AppIcons.doctor, width: 24, height: 24,color: _iconColor(3),),
-            label: "Doctor",
           ),
         ],
       ),

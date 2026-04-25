@@ -6,6 +6,7 @@ class TodoModel {
   final String? dueDate;
   final int priority;
   final String? category;
+  final bool sharedWithPartner;
 
   TodoModel({
     required this.id,
@@ -15,6 +16,7 @@ class TodoModel {
     this.dueDate,
     required this.priority,
     this.category,
+    required this.sharedWithPartner,
   });
 
   factory TodoModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class TodoModel {
       dueDate: json['dueDate'],
       priority: json['priority'] ?? 0,
       category: json['category'],
+      sharedWithPartner: json['sharedWithPartner'] ?? false,
     );
   }
 }

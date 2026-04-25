@@ -3,10 +3,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/message_model.dart';
 import '../services/skin/skin_ai_services.dart';
 import '../services/skin/skinstate.dart';
+
 class SkinCubit extends Cubit<SkinState> {
   final SkinAIService _service;
 
   SkinCubit(this._service) : super(const SkinState());
+
+  /// 🧠 حماية من null أو empty
+  String _safe(dynamic value) {
+    if (value == null) return 'Not available';
+    if (value.toString().trim().isEmpty) return 'Not available';
+    return value.toString();
+  }
+
+  /// 🧾 Formatting حسب الـ backend الحقيقي
+  String _formatSkinResponse(Map<String, dynamic> json) {
+    final label = _safe(json['label']);
+    final description = _safe(json['description']);
+
+    return '''
+🧾 Label: $label
+
+🧠 Description:
+$description
+''';
+  }
 
   Future<void> sendImage(File image) async {
     final userMessage = Message(
@@ -23,12 +44,10 @@ class SkinCubit extends Cubit<SkinState> {
     try {
       final result = await _service.analyzeImage(image);
 
-      final label = result['label'] ?? "Unknown";
-      final confidence = (result['confidence'] ?? 0).toStringAsFixed(2);
-      final description = result['description'] ?? "No description available";
+      print("FULL RESPONSE: $result");
 
       final botMessage = Message(
-        text: "$label\nConfidence: $confidence\n\n$description",
+        text: _formatSkinResponse(result),
         isUser: false,
       );
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ournest/features/onboarding/mother/step7_gestational_age.dart';
 import '../../../core/helper/my_navgator.dart';
 import 'package:ournest/core/utils/app_Styles.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../splash/views/background.dart';
+import '../mother/step9_birth_date.dart';
 import '../services/onboarding_data.dart';
 
 class Step6LastPeriod extends StatefulWidget {
@@ -149,7 +149,7 @@ class _Step6LastPeriodState extends State<Step6LastPeriod> {
                     // 4️⃣ الانتقال
                     MyNavigator.goTo(
                       context,
-                      const Step7GestationalAge(),
+                      const Step9BirthDate(),
                       type: NavigatorType.pushReplacement,
                     );
                   } catch (e) {
