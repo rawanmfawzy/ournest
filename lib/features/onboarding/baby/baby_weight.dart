@@ -5,6 +5,7 @@ import '../../../core/utils/app_Styles.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../splash/views/background.dart';
+import '../services/baby_services.dart';
 
 class BabyWeight extends StatelessWidget {
   const BabyWeight({super.key});
@@ -52,10 +53,19 @@ class BabyWeight extends StatelessWidget {
                 fontSize: 16.sp,
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const BabyName()),
-                );
+                if (weightController.text.isNotEmpty) {
+                  final value = double.tryParse(weightController.text.replaceAll(',', '.'));
+
+                  if (value == null || value <= 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Enter valid weight")),
+                    );
+                    return;
+                  }
+
+                  BabyData.weight = value;
+                }
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BabyName()));
               },
             ),
           ),

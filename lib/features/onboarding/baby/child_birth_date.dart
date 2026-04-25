@@ -8,6 +8,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
+import '../services/baby_services.dart';
 
 
 class ChildBirthDate extends StatefulWidget {
@@ -112,11 +113,12 @@ class _ChildBirthDate extends State<ChildBirthDate> {
                 fontSize: 16.sp,
               ),
               onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const BabyGender(),
-                  type: NavigatorType.push,
-                );
+                final day = days[dayController.selectedItem];
+                final month = monthController.selectedItem + 1;
+                final year = years[yearController.selectedItem];
+                BabyData.dateOfBirth =
+                    DateTime(year, month, day).toIso8601String().split("T").first;
+                MyNavigator.goTo(context, const BabyGender(), type: NavigatorType.push);
               },
             ),
           ),

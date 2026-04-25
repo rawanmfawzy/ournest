@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ournest/core/widgets/custom_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ournest/core/utils/app_Styles.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_Icons.dart';
@@ -9,11 +8,11 @@ import '../../../core/widgets/custom_buttom.dart';
 import '../../auth/views/login_page.dart';
 import '../../splash/views/background.dart';
 import '../services/model.dart';
+import '../services/mother_services.dart';
 import '../services/onboarding_data.dart';
-import '../services/services.dart';
 import '../services/father_service.dart';
-import '../../auth/services/login_service.dart';
-import '../../../core/cubit/token_storage_helper.dart';
+import '../services/services.dart';
+
 class Step9BirthDate extends StatefulWidget {
   const Step9BirthDate({super.key});
 
@@ -23,7 +22,6 @@ class Step9BirthDate extends StatefulWidget {
 
 class _Step9BirthDateState extends State<Step9BirthDate> {
   List<int> days = [];
-
   int selectedDay = 1;
   int selectedMonth = 1;
   int selectedYear = DateTime.now().year;
@@ -32,40 +30,41 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+
+  late final int currentYear = DateTime.now().year;
+  late final List<int> years = List.generate(currentYear - 1949, (index) => 1950 + index);
+
+  late FixedExtentScrollController dayController;
+  late FixedExtentScrollController monthController;
+  late FixedExtentScrollController yearController;
+
   int getDaysInMonth(int year, int month) {
     return DateTime(year, month + 1, 0).day;
   }
 
   void updateDays() {
     final maxDays = getDaysInMonth(selectedYear, selectedMonth);
-
     setState(() {
       days = List.generate(maxDays, (i) => i + 1);
-
       if (selectedDay > maxDays) {
         selectedDay = maxDays;
         dayController.jumpToItem(maxDays - 1);
       }
     });
   }
+
   @override
   void initState() {
     super.initState();
-
     selectedYear = currentYear;
     selectedMonth = 1;
-
-    days = List.generate(
-      getDaysInMonth(selectedYear, selectedMonth),
-          (i) => i + 1,
-    );
+    days = List.generate(getDaysInMonth(selectedYear, selectedMonth), (i) => i + 1);
 
     dayController = FixedExtentScrollController(initialItem: selectedDay - 1);
     monthController = FixedExtentScrollController(initialItem: selectedMonth - 1);
-    yearController = FixedExtentScrollController(
-      initialItem: years.indexOf(selectedYear),
-    );
+    yearController = FixedExtentScrollController(initialItem: years.indexOf(selectedYear));
   }
+
   @override
   void dispose() {
     dayController.dispose();
@@ -73,13 +72,6 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
     yearController.dispose();
     super.dispose();
   }
-  late final int currentYear = DateTime.now().year;
-
-  late final List<int> years =
-  List.generate(currentYear - 1949, (index) => 1950 + index);
-  late FixedExtentScrollController dayController;
-  late FixedExtentScrollController monthController;
-  late FixedExtentScrollController yearController;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +79,6 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
       body: Stack(
         children: [
           const SplashDecorations(),
-
           Positioned(
             top: 266.h,
             left: 55.w,
@@ -96,21 +87,13 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                 Text(
                   "Select your date of birth.",
                   textAlign: TextAlign.center,
-                  style: AppStyles.textStyle20w700AY.copyWith(
-                    color: AppColors.Pinky,
-                  ),
+                  style: AppStyles.textStyle20w700AY.copyWith(color: AppColors.Pinky),
                 ),
                 SizedBox(width: 6.w),
-                CustomSvg(
-                  path: AppIcons.birthday_cake,
-                  width: 22.w,
-                  height: 22.h,
-                ),
+                CustomSvg(path: AppIcons.birthday_cake, width: 22.w, height: 22.h),
               ],
             ),
           ),
-
-          // Pickers
           Positioned(
             top: 347.h,
             left: 16.w,
@@ -121,7 +104,7 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                   height: 35.h,
                   width: 350.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFA5B4).withValues(alpha: 0.4),
+                    color: const Color(0xFFEFA5B4).withOpacity(0.4),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
@@ -134,9 +117,7 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                         days.map((e) => e.toString()).toList(),
                         dayController,
                         60,
-                            (index) {
-                          selectedDay = days[index];
-                        },
+                            (index) => selectedDay = days[index],
                       ),
                       _buildPicker(
                         months,
@@ -162,54 +143,23 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
               ],
             ),
           ),
-
-          // Continue button
           Positioned(
             top: 671.h,
             left: 41.w,
             child: CustomButton(
-              text: "Continue",
-              width: 294.w,
-              height: 52.h,
-              textStyle: AppStyles.textStyle20w700AY.copyWith(
-                color: Colors.white,
-                fontSize: 16.sp,
-              ),
+                text: "Continue",
+                width: 294.w,
+                height: 52.h,
+                textStyle: AppStyles.textStyle20w700AY.copyWith(
+                  color: Colors.white,
+                  fontSize: 16.sp,
+                ),
                 onPressed: () async {
                   try {
-                    final prefs = await SharedPreferences.getInstance();
-                    final token = prefs.getString("token");
-
-                    if (token == null || token.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please login again")),
-                      );
-                      return;
-                    }
-
-                    // 🔥 هنا الحل الحقيقي
                     final day = days[dayController.selectedItem];
                     final month = monthController.selectedItem + 1;
                     final year = years[yearController.selectedItem];
-
-                    final date = DateTime(year, month, day);
-
-                    OnboardingData.dateOfBirth =
-                        date.toIso8601String().split("T").first;
-
-                    print("DOB SAVED: ${OnboardingData.dateOfBirth}");
-
-                    // 2️⃣ Validate required fields BEFORE sending
-                    if (OnboardingData.role.isEmpty ||
-                        OnboardingData.height <= 0 ||
-                        OnboardingData.weight <= 0 ||
-                        OnboardingData.knowledgeType.isEmpty ||
-                        OnboardingData.dateOfBirth.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please complete all onboarding steps")),
-                      );
-                      return;
-                    }
+                    OnboardingData.dateOfBirth = DateTime(year, month, day).toIso8601String().split("T").first;
 
                     final onboarding = OnboardingRequest(
                       role: OnboardingData.role,
@@ -225,54 +175,19 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
                       dateOfBirth: OnboardingData.dateOfBirth,
                     );
 
-                    await OnboardingService.submit(onboarding, token);
+                    // 1. حفظ البيانات
+                    await OnboardingService.submit(onboarding);
 
-                    // If role is Father, also create the Father profile record
+                    // 2. إنشاء بروفايل حسب الدور (عشان مايرجعش 404 في الدشبورد)
                     if (OnboardingData.role == "Father") {
-                      try {
-                        String activeToken = token;
-                        final refreshTokenStr = await TokenStorage.getRefreshToken();
-                        if (refreshTokenStr != null && refreshTokenStr.isNotEmpty) {
-                          try {
-                            final refreshData = await LoginService.refreshToken(token, refreshTokenStr);
-                            if (refreshData['token'] != null) {
-                              activeToken = refreshData['token'];
-                              await TokenStorage.saveToken(activeToken);
-                              if (refreshData['refreshToken'] != null) {
-                                await TokenStorage.saveRefreshToken(refreshData['refreshToken']);
-                              }
-                            }
-                          } catch (e) {
-                            print("Token refresh failed: $e");
-                          }
-                        }
-
-                        await FatherService.createProfile(
-                          token: activeToken,
-                          weight: OnboardingData.weight > 0
-                              ? OnboardingData.weight
-                              : null,
-                          height: OnboardingData.height > 0
-                              ? OnboardingData.height
-                              : null,
-                        );
-                      } catch (e) {
-                        print("Failed to create father profile: $e");
-                        // Non-fatal: profile may already exist or
-                        // will be created on next login
-                      }
+                      await FatherService.createProfile(weight: OnboardingData.weight, height: OnboardingData.height);
+                    } else if (OnboardingData.role == "Mother") {
+                      await MotherService.createProfile(weight: OnboardingData.weight, height: OnboardingData.height);
                     }
 
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginPage()),
-                          (route) => false,
-                    );
-
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginPage()), (route) => false);
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Error: $e")),
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
                   }
                 }
             ),
@@ -282,12 +197,7 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
     );
   }
 
-  Widget _buildPicker(
-      List<String> items,
-      FixedExtentScrollController controller,
-      double width,
-      Function(int) onChanged,
-      ){
+  Widget _buildPicker(List<String> items, FixedExtentScrollController controller, double width, Function(int) onChanged) {
     return SizedBox(
       width: width.w,
       child: ListWheelScrollView.useDelegate(
@@ -302,10 +212,7 @@ class _Step9BirthDateState extends State<Step9BirthDate> {
             return Center(
               child: Text(
                 items[index],
-                style: AppStyles.textStyle20w700AY.copyWith(
-                  color: AppColors.Pinky,
-                  fontSize: 16.sp,
-                ),
+                style: AppStyles.textStyle20w700AY.copyWith(color: AppColors.Pinky, fontSize: 16.sp),
               ),
             );
           },

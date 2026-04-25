@@ -1,34 +1,28 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../../../core/utils/api_constants.dart';
+import '../../../core/cubit/dio_interceptor.dart';
 
 class PassService {
   static Future<Map<String, dynamic>> forgotPassword(String email, String recoveryEmail) async {
-    final url = Uri.parse("${ApiConstants.baseUrl}/auth/forgot-password");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "recoveryEmail": recoveryEmail}),
-    );
-    final data = jsonDecode(response.body);
-    if (response.statusCode == 200 && data["success"] == true) {
-      return data;
+    try {
+      final response = await DioClient.dio.post(
+        "/auth/forgot-password",
+        data: {"email": email, "recoveryEmail": recoveryEmail},
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception("Failed to send verification code");
     }
-    throw Exception(data["error"] ?? "Failed to send verification code");
   }
 
   static Future<Map<String, dynamic>> verifyOtp(String email, String otpCode) async {
-    final url = Uri.parse("${ApiConstants.baseUrl}/auth/verify-otp");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "otpCode": otpCode}),
-    );
-    final data = jsonDecode(response.body);
-    if (response.statusCode == 200 && data["success"] == true) {
-      return data;
+    try {
+      final response = await DioClient.dio.post(
+        "/auth/verify-otp",
+        data: {"email": email, "otpCode": otpCode},
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception("Failed to verify code");
     }
-    throw Exception(data["error"] ?? "Failed to verify code");
   }
 
   static Future<Map<String, dynamic>> resetPassword({
@@ -37,21 +31,19 @@ class PassService {
     required String newPassword,
     required String confirmNewPassword,
   }) async {
-    final url = Uri.parse("${ApiConstants.baseUrl}/auth/reset-password");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": email,
-        "resetToken": resetToken,
-        "newPassword": newPassword,
-        "confirmNewPassword": confirmNewPassword,
-      }),
-    );
-    final data = jsonDecode(response.body);
-    if (response.statusCode == 200 && data["success"] == true) {
-      return data;
+    try {
+      final response = await DioClient.dio.post(
+        "/auth/reset-password",
+        data: {
+          "email": email,
+          "resetToken": resetToken,
+          "newPassword": newPassword,
+          "confirmNewPassword": confirmNewPassword,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception("Failed to reset password");
     }
-    throw Exception(data["error"] ?? "Failed to reset password");
   }
 }

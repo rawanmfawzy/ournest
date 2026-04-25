@@ -6,6 +6,7 @@ import 'package:ournest/core/utils/app_Styles.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_buttom.dart';
 import '../../splash/views/background.dart';
+import '../services/baby_services.dart';
 
 class BabyGender extends StatelessWidget {
   const BabyGender({super.key});
@@ -53,11 +54,8 @@ class BabyGender extends StatelessWidget {
                 fontSize: 16.sp,
               ),
               onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const BabyWeight(),
-                  type: NavigatorType.push,
-                );
+                BabyData.gender = "Girl";
+                MyNavigator.goTo(context, const BabyWeight(), type: NavigatorType.push);
               },
             ),
           ),
@@ -84,11 +82,8 @@ class BabyGender extends StatelessWidget {
                 fontSize: 16.sp,
               ),
               onPressed: () {
-                MyNavigator.goTo(
-                  context,
-                  const BabyWeight(),
-                  type: NavigatorType.push,
-                );
+                BabyData.gender = "Boy";
+                MyNavigator.goTo(context, const BabyWeight(), type: NavigatorType.push);
               },
             ),
           ),

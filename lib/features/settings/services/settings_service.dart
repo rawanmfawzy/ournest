@@ -1,31 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import '../../../core/cubit/token_storage_helper.dart';
-import '../../../core/utils/api_constants.dart';
+import 'package:dio/dio.dart';
+import '../../../core/cubit/dio_interceptor.dart';
 
 class SettingsService {
-  // ── Profile ────────────────────────────────────────────────
-
-  /// GET /api/users/profile
   static Future<Map<String, dynamic>> getProfile() async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/profile');
-
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to load profile');
+    final response = await DioClient.dio.get('/users/profile');
+    return response.data;
   }
 
-  /// PUT /api/users/profile
   static Future<Map<String, dynamic>> updateProfile({
     required String fullName,
     String? dateOfBirth,
@@ -34,9 +16,6 @@ class SettingsService {
     String? country,
     String? city,
   }) async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/profile');
-
     final body = <String, dynamic>{
       'fullName': fullName,
       'gender': gender,
@@ -46,120 +25,40 @@ class SettingsService {
     if (country != null) body['country'] = country;
     if (city != null) body['city'] = city;
 
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(body),
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to update profile');
+    final response = await DioClient.dio.put('/users/profile', data: body);
+    return response.data;
   }
 
-  /// PUT /api/users/profile/picture  (multipart)
   static Future<String> uploadProfilePicture(File image) async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/profile/picture');
-
-    final request = http.MultipartRequest('PUT', url)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(await http.MultipartFile.fromPath('image', image.path));
-
-    final streamedResponse = await request.send()
-        .timeout(const Duration(seconds: 30));
-    final response = await http.Response.fromStream(streamedResponse);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['profilePictureUrl'] as String;
-    }
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to upload picture');
+    final formData = FormData.fromMap({
+      "image": await MultipartFile.fromFile(image.path),
+    });
+    final response = await DioClient.dio.put('/users/profile/picture', data: formData);
+    return response.data['profilePictureUrl'];
   }
 
-  // ── Settings ───────────────────────────────────────────────
-
-  /// GET /api/users/settings
   static Future<Map<String, dynamic>> getSettings() async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/settings');
-
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to load settings');
+    final response = await DioClient.dio.get('/users/settings');
+    return response.data;
   }
 
-  /// PUT /api/users/settings
-  static Future<Map<String, dynamic>> updateSettings({
-    required String language,
-    required bool notificationsEnabled,
-    required bool emailNotifications,
-    required bool pushNotifications,
-    required bool smsNotifications,
-    required String theme,
-    required bool privacyProfilePublic,
-  }) async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/settings');
-
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'language': language,
-        'notificationsEnabled': notificationsEnabled,
-        'emailNotifications': emailNotifications,
-        'pushNotifications': pushNotifications,
-        'smsNotifications': smsNotifications,
-        'theme': theme,
-        'privacyProfilePublic': privacyProfilePublic,
-      }),
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to update settings');
+  static Future<Map<String, dynamic>> updateSettings(Map<String, dynamic> settingsData) async {
+    final response = await DioClient.dio.put('/users/settings', data: settingsData);
+    return response.data;
   }
 
-  /// POST /api/users/change-password
   static Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
     required String confirmNewPassword,
   }) async {
-    final token = await TokenStorage.getToken();
-    final url = Uri.parse('${ApiConstants.baseUrl}/users/change-password');
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
+    await DioClient.dio.post(
+      '/users/change-password',
+      data: {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
         'confirmNewPassword': confirmNewPassword,
-      }),
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) return;
-    final error = jsonDecode(response.body);
-    throw Exception(error['error'] ?? 'Failed to change password');
+      },
+    );
   }
 }
