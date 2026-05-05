@@ -1,0 +1,94 @@
+import 'dart:io';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../services/communityservice.dart';
+import 'communitystate.dart';
+
+class CommunityCubit extends Cubit<CommunityState> {
+  CommunityCubit() : super(CommunityInitial());
+
+  List posts = [];
+  List allPosts = [];
+  List filteredPosts = [];
+  String searchQuery = "";
+
+  Future<void> getPosts() async {
+    try {
+      emit(CommunityLoading());
+
+      posts = await CommunityService.getPosts();
+
+      allPosts = List.from(posts);
+      filteredPosts = List.from(posts);
+
+      emit(PostsSuccess(filteredPosts));
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
+
+  Future<void> createPost({
+    required String content,
+    required String category,
+    String? imageUrl,
+  }) async {
+    try {
+      await CommunityService.createPost(
+        content: content,
+        category: category,
+        imageUrl: imageUrl,
+      );
+
+      await getPosts();
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
+
+  Future<void> likePost(String postId) async {
+    try {
+      final res = await CommunityService.toggleLike(postId);
+
+      posts = posts.map((post) {
+        final p = Map<String, dynamic>.from(post);
+
+        if (p["id"] == postId) {
+          p["likesCount"] = res["likesCount"];
+          p["isLikedByCurrentUser"] = res["liked"];
+        }
+
+        return p;
+      }).toList();
+
+      emit(PostsSuccess(posts));
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
+  Future<void> deletePost(String postId) async {
+    try {
+      await CommunityService.deletePost(postId);
+      await getPosts();
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
+  void searchPosts(String query) {
+    searchQuery = query;
+
+    if (query.isEmpty) {
+      filteredPosts = List.from(allPosts);
+    } else {
+      filteredPosts = allPosts.where((post) {
+        final content = (post["content"] ?? "").toString().toLowerCase();
+        final author = (post["authorName"] ?? "").toString().toLowerCase();
+        final category = (post["category"] ?? "").toString().toLowerCase();
+
+        return content.contains(query.toLowerCase()) ||
+            author.contains(query.toLowerCase()) ||
+            category.contains(query.toLowerCase());
+      }).toList();
+    }
+
+    emit(PostsSuccess(List.from(filteredPosts)));
+  }
+}

@@ -1,0 +1,318 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/cubit/user_cubit.dart';
+import '../../../../core/cubit/user_state.dart';
+import '../../../../core/helper/my_navgator.dart';
+import 'package:ournest/core/utils/app_Styles.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_Icons.dart';
+import '../../../../core/utils/app_Images.dart';
+import '../../../../core/widgets/custom_svg.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../auth/views/login_page.dart';
+import '../../../link/mother/views/mother_link.dart';
+import '../../cubit/settings_cubit.dart';
+import '../../cubit/settings_state.dart';
+import 'change_mode.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<SettingsCubit>().loadProfile();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<UserCubit, UserState>(
+      listener: (context, state) {
+        if (state is UserLogoutSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFE6EA),
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFFFFFFF), Color(0xFFFFC5D0)],
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 65.h),
+
+                  /// Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Profile picture from API
+                      BlocBuilder<SettingsCubit, SettingsState>(
+                        builder: (context, state) {
+                          String? pictureUrl;
+                          String displayName = '';
+
+                          if (state is ProfileLoaded) {
+                            pictureUrl = state.profile['profilePictureUrl'] as String?;
+                            displayName = state.profile['fullName'] as String? ?? '';
+                          } else if (state is ProfileUpdated) {
+                            pictureUrl = state.profile['profilePictureUrl'] as String?;
+                            displayName = state.profile['fullName'] as String? ?? '';
+                          }
+
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 20.r,
+                                backgroundImage: pictureUrl != null && pictureUrl.isNotEmpty
+                                    ? NetworkImage(pictureUrl) as ImageProvider
+                                    : const AssetImage(Appimages.person_image),
+                              ),
+                              if (displayName.isNotEmpty) ...[
+                                SizedBox(width: 10.w),
+                                Text(
+                                  displayName,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.Pinky,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                      Text('Settings', style: AppStyles.textStyle20w700AY),
+                      CustomSvg(
+                        path: AppIcons.settings,
+                        width: 24.w,
+                        height: 24.h,
+                        color: AppColors.Pinky,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 40.h),
+
+                  // FIRST CONTAINER
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.Pinky),
+                      borderRadius: BorderRadius.circular(12.r),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.change_mode,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Change mode',
+                          onTap: () {
+                            MyNavigator.goTo(
+                              context,
+                              const ChangeModePage(),
+                              type: NavigatorType.push,
+                            );
+                          },
+                        ),
+                        Divider(height: 1.h),
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.language,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Change Language',
+                          value: 'English',
+                          onTap: () {},
+                        ),
+                        Divider(height: 1.h),
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.premium,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Get premium',
+                          trailingIcon: CustomSvg(
+                            path: AppIcons.lock_closed,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // SECOND CONTAINER
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.Pinky),
+                      borderRadius: BorderRadius.circular(12.r),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.partner_heart,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Share with partner',
+                          onTap: () {
+                            MyNavigator.goTo(
+                              context,
+                              const LinkMother(),
+                              type: NavigatorType.push,
+                            );
+                          },
+                        ),
+                        Divider(height: 1.h),
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.share,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Share with friends',
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // THIRD CONTAINER - OTHER
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Other',
+                      style: AppStyles.textStyle14w400hints.copyWith(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.Pinky),
+                      borderRadius: BorderRadius.circular(12.r),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.support,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Support',
+                          onTap: () {},
+                        ),
+                        Divider(height: 1.h),
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.help,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'Privacy policy',
+                          onTap: () {},
+                        ),
+                        Divider(height: 1.h),
+                        settingsRow(
+                          icon: CustomSvg(
+                            path: AppIcons.about,
+                            width: 24.w,
+                            height: 24.h,
+                          ),
+                          title: 'About',
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 65.h),
+
+                  // LOG OUT
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.Pinky),
+                      borderRadius: BorderRadius.circular(12.r),
+                      color: Colors.white,
+                    ),
+                    child: settingsRow(
+                      icon: CustomSvg(
+                        path: AppIcons.log_out,
+                        width: 24.w,
+                        height: 24.h,
+                      ),
+                      title: 'Log out',
+                      onTap: () {
+                        context.read<UserCubit>().logout();
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Widget settingsRow({
+  required Widget icon,
+  required String title,
+  String? value,
+  Widget? trailingIcon,
+  required VoidCallback onTap,
+}) {
+  return ListTile(
+    onTap: onTap,
+    leading: icon,
+    title: Text(title, style: AppStyles.textStyle14w500Alex),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (value != null)
+          Text(value,
+              style: TextStyle(
+                  color: const Color(0xFF49C14E), fontSize: 13.sp)),
+        if (trailingIcon != null) trailingIcon,
+        if (value == null && trailingIcon == null)
+          Icon(Icons.arrow_forward_ios,
+              size: 16.sp, color: AppColors.Pinky),
+      ],
+    ),
+  );
+}

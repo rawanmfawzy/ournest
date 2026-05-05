@@ -1,0 +1,160 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:ournest/core/cubit/token_storage_helper.dart';
+import '../../features/auth/services/login_service.dart';
+import '../../features/auth/services/signup_service.dart';
+import 'user_state.dart';
+
+class UserCubit extends Cubit<UserState> {
+  UserCubit() : super(UserInitial());
+
+  final TextEditingController signInUsername = TextEditingController();
+  final TextEditingController signInPassword = TextEditingController();
+
+  final TextEditingController signUpUsername = TextEditingController();
+  final TextEditingController signUpPhoneNumber = TextEditingController();
+  final TextEditingController signUpPassword = TextEditingController();
+  final TextEditingController confirmPassword = TextEditingController();
+
+  bool rememberMe = false;
+  XFile? profilePic;
+
+  /// LOGIN
+  Future<void> login() async {
+    if (signInUsername.text.isEmpty || signInPassword.text.isEmpty) {
+      emit(UserLoginError("Please fill all fields"));
+      return;
+    }
+
+    try {
+      emit(UserLoading());
+
+      final result = await LoginService.login(
+        username: signInUsername.text.trim().toLowerCase(),
+        password: signInPassword.text.trim(),
+      );
+
+      await TokenStorage.saveToken(result["token"]);
+
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
+      }
+
+      if (result["user"] != null && result["user"]["role"] != null) {
+        await TokenStorage.saveRole(result["user"]["role"]);
+      }
+
+      emit(UserLoginSuccess(result));
+    } catch (e) {
+      emit(UserLoginError(e.toString()));
+    }
+  }
+
+  /// SIGNUP
+  Future<void> signup() async {
+    try {
+      emit(UserLoading());
+
+      final result = await SignupService.signup(
+        username: signUpUsername.text.trim().toLowerCase(),
+        phone: signUpPhoneNumber.text.trim(),
+        password: signUpPassword.text.trim(),
+        confirmPassword: confirmPassword.text.trim(),
+      );
+
+      if (result["token"] != null) {
+        await TokenStorage.saveToken(result["token"]);
+      }
+
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
+      }
+
+      emit(UserSignupSuccess(result));
+    } catch (e) {
+      emit(UserSignupError(e.toString()));
+    }
+  }
+
+  /// SOCIAL LOGIN
+  Future<void> socialLogin(String provider) async {
+    try {
+      emit(UserLoading());
+
+      // TODO: Replace with actual token from google_sign_in / flutter_facebook_auth
+      const dummyToken = "dummy_social_token";
+      const defaultRole = "Mother";
+
+      final result = provider == "google"
+          ? await LoginService.loginWithGoogle(dummyToken, defaultRole)
+          : await LoginService.loginWithFacebook(dummyToken, defaultRole);
+
+      if (result["success"] == true) {
+        await TokenStorage.saveToken(result["token"]);
+
+        if (result["refreshToken"] != null) {
+          await TokenStorage.saveRefreshToken(result["refreshToken"]);
+        }
+
+        if (result["user"] != null && result["user"]["role"] != null) {
+          await TokenStorage.saveRole(result["user"]["role"]);
+        }
+
+        emit(UserLoginSuccess(result));
+      } else {
+        emit(UserLoginError(result["error"] ?? "Social login failed"));
+      }
+    } catch (e) {
+      emit(UserLoginError(e.toString()));
+    }
+  }
+  ///user logout
+  Future<void> logout() async {
+    emit(UserLogoutLoading());
+
+    await TokenStorage.clear(); // 👈 أهم خطوة
+
+    emit(UserLogoutSuccess());
+  }
+
+  /// REFRESH TOKEN
+  Future<void> refreshToken() async {
+    try {
+      final token = await TokenStorage.getToken();
+      final refresh = await TokenStorage.getRefreshToken();
+
+      if (token == null || refresh == null) return;
+
+      final result = await LoginService.refreshToken(token, refresh);
+
+      await TokenStorage.saveToken(result["token"]);
+
+      if (result["refreshToken"] != null) {
+        await TokenStorage.saveRefreshToken(result["refreshToken"]);
+      }
+
+      emit(UserTokenRefreshed(result));
+    } catch (e) {
+      emit(UserRefreshTokenError(e.toString()));
+    }
+  }
+
+  /// IMAGE PICKER
+  Future<void> pickProfilePic() async {
+    final picker = ImagePicker();
+    profilePic = await picker.pickImage(source: ImageSource.gallery);
+    emit(UserImagePicked());
+  }
+
+  @override
+  Future<void> close() {
+    signInUsername.dispose();
+    signInPassword.dispose();
+    signUpUsername.dispose();
+    signUpPhoneNumber.dispose();
+    signUpPassword.dispose();
+    confirmPassword.dispose();
+    return super.close();
+  }
+}
